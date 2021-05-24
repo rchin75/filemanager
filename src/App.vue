@@ -1,26 +1,28 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <f7-app v-bind="f7params">
+
+    <f7-view main url="/"></f7-view>
+
+  </f7-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import routes from './routes.js';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      f7params: {
+        routes,
+        name: 'File Manager',
+        id: 'nl.roychin.filemanager'
+      }
+    }
   }
 }
+
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>

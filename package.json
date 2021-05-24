@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "framework7": "^6.0.17",
+    "framework7-icons": "^4.0.2",
+    "framework7-vue": "^6.0.17",
+    "postcss": "^8.3.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
