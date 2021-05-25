@@ -7,7 +7,11 @@
 export default function registerFilters(app) {
     app.config.globalProperties.$filters = {
         formatDate(date) {
-            return date.toLocaleDateString("en-US");
+            let theDate = date;
+            if (typeof date === 'string' || date instanceof String) {
+                theDate = new Date(date);
+            }
+            return theDate.toLocaleDateString("en-US");
         },
         formatSize(size) {
             if (size >= 1024 * 1024) {

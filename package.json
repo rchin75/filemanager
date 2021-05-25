@@ -5,13 +5,17 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "server": "nodemon --watch server -e js,json --delay 1000ms server/index.js"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "express": "^4.17.1",
     "framework7": "^6.0.17",
     "framework7-icons": "^4.0.2",
     "framework7-vue": "^6.0.17",
+    "path": "^0.12.7",
     "postcss": "^8.3.0",
     "vue": "^3.0.0"
   },
@@ -22,7 +26,8 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "nodemon": "^2.0.7"
   },
   "eslintConfig": {
     "root": true,

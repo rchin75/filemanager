@@ -1,42 +1,14 @@
 import {reactive, computed} from 'vue';
+import axios from "axios";
 
+/**
+ * State representing the current folder of the file system.
+ * @type {UnwrapNestedRefs<{path: [], files: []}>}
+ */
 const state = reactive({
-    files: [
-        {
-            name: 'Photos',
-            size: '0',
-            type: 'folder',
-            created: new Date(),
-            updated: new Date(),
-            owner: 'Roy'
-        },
-        {
-            name: 'test.txt',
-            size: '1024',
-            type: 'text/plain',
-            created: new Date(),
-            updated: new Date(),
-            owner: 'Roy'
-        },
-        {
-            name: 'photo01.jpg',
-            size: '2048',
-            type: 'image/jpeg',
-            created: new Date(),
-            updated: new Date(),
-            owner: 'John'
-        },
-        {
-            name: 'photo02.jpg',
-            size: '4034',
-            type: 'image/jpeg',
-            created: new Date(),
-            updated: new Date(),
-            owner: 'Jane'
-        }
-    ],
+    files: [],
     // Folders of the path. Note root is [].
-    path: ['test','test2']
+    path: []
 });
 
 export default function useFileSystem() {
@@ -44,8 +16,26 @@ export default function useFileSystem() {
     const files = computed(() => state.files);
     const path = computed( () => state.path);
 
+    /**
+     * Lists the available files and folders.
+     * @param path The path in this format: 'folder1/folder2'. If not provided we will load the root folder.
+     * @returns {Promise<void>}
+     */
+    async function listFiles(path) {
+        const url = 'api/files';
+        const params = {
+            path : path ? path : ''
+        }
+        const result = await axios.get(url, {params});
+        if (result.data) {
+            state.files = result.data.files;
+            state.path = result.data.path;
+        }
+    }
+
     return {
         files,
-        path
+        path,
+        listFiles
     }
 }

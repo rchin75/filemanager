@@ -69,6 +69,10 @@
                             v-bind:title="selectedFile ?  $filters.formatDate(selectedFile.updated) : ''"
                     ></f7-list-item>
                     <f7-list-item
+                            header="Last accessed"
+                            v-bind:title="selectedFile ?  $filters.formatDate(selectedFile.accessed) : ''"
+                    ></f7-list-item>
+                    <f7-list-item
                             header="Owner"
                             v-bind:title="selectedFile ?  selectedFile.owner : ''"
                     ></f7-list-item>
@@ -81,8 +85,9 @@
 <script>
     import useFileSystem from "../model/useFileSystem";
     import {ref} from "vue";
+    import { onMounted } from 'vue';
 
-    const {files, path} = useFileSystem();
+    const {files, path, listFiles} = useFileSystem();
 
     const popupOpened = ref(false);
 
@@ -132,6 +137,11 @@
     export default {
         props: {},
         setup() {
+            onMounted(() => {
+                console.log('mounted!')
+                listFiles();
+            });
+
             return {
                 files,
                 path,
