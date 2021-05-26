@@ -6,14 +6,7 @@
                 <f7-link icon-f7="bars" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
             <f7-subnavbar>
-                <div class="breadcrumb">
-                    <f7-link class="breadcrumb-link" href="false" @click="onOpen(null)"><f7-icon f7="house"></f7-icon></f7-link>
-                    <span class="breadcrumb-separator">/</span>
-                    <span v-for="(folder,index) in path" :key="folder">
-                        <f7-link class="breadcrumb-link" href="false" @click="onOpenPath(index)">{{folder}}</f7-link>
-                        <span class="breadcrumb-separator">/</span>
-                    </span>
-                </div>
+                <breadcrumb></breadcrumb>
             </f7-subnavbar>
         </f7-navbar>
         <!-- The NavBar menu -->
@@ -87,6 +80,7 @@
     import useFileSystem from "../model/useFileSystem";
     import {ref} from "vue";
     import { onMounted } from 'vue';
+    import Breadcrumb from "../components/breadcrumb";
 
     const {files, path, listFiles} = useFileSystem();
 
@@ -142,20 +136,6 @@
     }
 
     /**
-     * Opens the path based on the path index.
-     * @param {number} index The index.
-     */
-    function onOpenPath(index) {
-        let folderPath = '';
-        for (let i=0; i<=index; i++) {
-            folderPath += '/' + path.value[i]
-        }
-        console.log('index', index);
-        console.log('folderPath', folderPath);
-        listFiles(folderPath);
-    }
-
-    /**
      * Shows details about the selected file.
      * @param file The selected file.
      */
@@ -174,6 +154,7 @@
     }
 
     export default {
+        components: {Breadcrumb},
         props: {},
         setup() {
             onMounted(() => {
@@ -188,7 +169,6 @@
                 onOpen,
                 onDelete,
                 onInfo,
-                onOpenPath,
                 popupOpened,
                 selectedFile
             };
@@ -198,20 +178,5 @@
 <style scoped>
     .page {
         background-color: #eeeeee;
-    }
-    .breadcrumb {
-        font-size: 16px;
-    }
-    .breadcrumb .breadcrumb-separator {
-        float: left;
-        box-sizing: border-box;
-        align-content: center;
-        align-items: center;
-        line-height: 48px;
-    }
-    .breadcrumb .breadcrumb-link {
-        float:left;
-        padding-left: 5px !important;
-        padding-right: 5px !important;
     }
 </style>
