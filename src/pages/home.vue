@@ -7,9 +7,10 @@
             </f7-nav-right>
             <f7-subnavbar>
                 <div class="breadcrumb">
+                    <f7-link class="breadcrumb-link" href="false" @click="onOpen(null)"><f7-icon f7="house"></f7-icon></f7-link>
                     <span class="breadcrumb-separator">/</span>
-                    <span v-for="folder in path" :key="folder">
-                        <f7-link class="breadcrumb-link"  href="false">{{folder}}</f7-link>
+                    <span v-for="(folder,index) in path" :key="folder">
+                        <f7-link class="breadcrumb-link" href="false" @click="onOpenPath(index)">{{folder}}</f7-link>
                         <span class="breadcrumb-separator">/</span>
                     </span>
                 </div>
@@ -93,6 +94,10 @@
 
     const selectedFile = ref(null);
 
+    /**
+     * Determines the icon for the file.
+     * @return The icon to use.
+     */
     function formatFileType(type) {
         let icon;
         switch (type) {
@@ -104,6 +109,8 @@
             case 'text/plain':
             case 'text/html':
             case 'text/javascript':
+            case 'text/markdown':
+            case 'text/json':
                 icon = 'doc_plaintext';
                 break;
             case 'application/msword':
@@ -120,16 +127,48 @@
         return icon;
     }
 
+    /**
+     * Opens a file or folder.
+     * @param file The selected file.
+     */
     function onOpen(file) {
-        console.log('Opening file', file);
+        if (!file) {
+            // If no file was provided we open the root folder.
+            listFiles();
+        } else if (file.type === 'folder') {
+            const folderPath = path.value.join('/') + '/' + file.name;
+            listFiles(folderPath);
+        } // else open file
     }
 
+    /**
+     * Opens the path based on the path index.
+     * @param {number} index The index.
+     */
+    function onOpenPath(index) {
+        let folderPath = '';
+        for (let i=0; i<=index; i++) {
+            folderPath += '/' + path.value[i]
+        }
+        console.log('index', index);
+        console.log('folderPath', folderPath);
+        listFiles(folderPath);
+    }
+
+    /**
+     * Shows details about the selected file.
+     * @param file The selected file.
+     */
     function onInfo(file) {
         console.log('Info for file', file);
         selectedFile.value = file;
         popupOpened.value = true;
     }
 
+    /**
+     * Deletes the selected file.
+     * @param file The selected file.
+     */
     function onDelete(file) {
         console.log('Delete file', file);
     }
@@ -149,6 +188,7 @@
                 onOpen,
                 onDelete,
                 onInfo,
+                onOpenPath,
                 popupOpened,
                 selectedFile
             };
@@ -159,6 +199,9 @@
     .page {
         background-color: #eeeeee;
     }
+    .breadcrumb {
+        font-size: 16px;
+    }
     .breadcrumb .breadcrumb-separator {
         float: left;
         box-sizing: border-box;
@@ -168,5 +211,7 @@
     }
     .breadcrumb .breadcrumb-link {
         float:left;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
     }
 </style>

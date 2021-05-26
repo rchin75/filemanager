@@ -7,6 +7,7 @@ let currentDir = testFolder;
 
 const allowedFileTypes = {
     'txt' : 'text/plain',
+    'md' : 'text/markdown',
     'html' : 'text/html',
     'jpg' : 'image/jpeg',
     'jpeg' : 'image/jpeg',
@@ -14,6 +15,7 @@ const allowedFileTypes = {
     'gif' : 'image/gif',
     'js' : 'text/javascript',
     'csv' : 'text/csv',
+    'json' : 'text/json',
     'pdf' : 'application/pdf',
     'doc' : 'application/msword',
 }

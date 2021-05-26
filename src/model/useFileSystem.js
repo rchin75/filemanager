@@ -18,7 +18,7 @@ export default function useFileSystem() {
 
     /**
      * Lists the available files and folders.
-     * @param path The path in this format: 'folder1/folder2'. If not provided we will load the root folder.
+     * @param [path] The path in this format: 'folder1/folder2'. If not provided we will load the root folder.
      * @returns {Promise<void>}
      */
     async function listFiles(path) {
