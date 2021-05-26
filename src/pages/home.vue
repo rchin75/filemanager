@@ -39,39 +39,7 @@
 
         <!-- A popup with file details. -->
         <f7-popup class="file-details-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
-            <f7-page>
-                <f7-navbar v-bind:title="selectedFile ? selectedFile.name : ''">
-                    <f7-nav-right>
-                        <f7-link popup-close>Close</f7-link>
-                    </f7-nav-right>
-                </f7-navbar>
-                <f7-list>
-                    <f7-list-item
-                            header="Size"
-                            v-bind:title="selectedFile ? $filters.formatSize(selectedFile.size): ''"
-                    ></f7-list-item>
-                    <f7-list-item
-                            header="Type"
-                            v-bind:title="selectedFile ? selectedFile.type : ''"
-                    ></f7-list-item>
-                    <f7-list-item
-                            header="Created"
-                            v-bind:title="selectedFile ?  $filters.formatDate(selectedFile.created) : ''"
-                    ></f7-list-item>
-                    <f7-list-item
-                            header="Updated"
-                            v-bind:title="selectedFile ?  $filters.formatDate(selectedFile.updated) : ''"
-                    ></f7-list-item>
-                    <f7-list-item
-                            header="Last accessed"
-                            v-bind:title="selectedFile ?  $filters.formatDate(selectedFile.accessed) : ''"
-                    ></f7-list-item>
-                    <f7-list-item
-                            header="Owner"
-                            v-bind:title="selectedFile ?  selectedFile.owner : ''"
-                    ></f7-list-item>
-                </f7-list>
-            </f7-page>
+            <file-details-panel v-bind:selected-file="selectedFile"></file-details-panel>
         </f7-popup>
 
     </f7-page>
@@ -81,6 +49,7 @@
     import {ref} from "vue";
     import { onMounted } from 'vue';
     import Breadcrumb from "../components/breadcrumb";
+    import FileDetailsPanel from "../components/fileDetailsPanel";
 
     const {files, path, listFiles} = useFileSystem();
 
@@ -140,7 +109,6 @@
      * @param file The selected file.
      */
     function onInfo(file) {
-        console.log('Info for file', file);
         selectedFile.value = file;
         popupOpened.value = true;
     }
@@ -154,7 +122,7 @@
     }
 
     export default {
-        components: {Breadcrumb},
+        components: {FileDetailsPanel, Breadcrumb},
         props: {},
         setup() {
             onMounted(() => {
