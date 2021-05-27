@@ -1,9 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 
-const testFolder = './testFolder';
-const rootFolder = testFolder;
-let currentDir = testFolder;
+console.log('Managed folder = ' + process.env.MANAGED_FOLDER);
+
+const rootFolder = process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './';
+let currentDir = rootFolder;
 
 const allowedFileTypes = {
     'txt' : 'text/plain',

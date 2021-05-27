@@ -3,12 +3,20 @@
         <!-- The NavBar -->
         <f7-navbar title="File Manager">
             <f7-nav-right>
+                <f7-link icon-f7="plus" popover-open=".action-menu"></f7-link>
                 <f7-link icon-f7="bars" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
             <f7-subnavbar>
                 <breadcrumb></breadcrumb>
             </f7-subnavbar>
         </f7-navbar>
+        <!-- The action menu in the navbar -->
+        <f7-popover class="action-menu">
+            <f7-list>
+                <f7-list-item link="#" popover-close title="New file"></f7-list-item>
+                <f7-list-item link="#" popover-close title="New folder"></f7-list-item>
+            </f7-list>
+        </f7-popover>
         <!-- The NavBar menu -->
         <f7-popover class="popover-menu">
             <f7-list>

@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "framework7": "^6.0.17",
     "framework7-icons": "^4.0.2",
