@@ -52,13 +52,14 @@ function resolvePath(currentDir) {
 }
 
 /**
- * Lists a directory contents.
- * @param req
- * @param res
+ * Gets the full path.
+ * @param {string} subPath A sub path.
+ * @return {null} Full path or null.
  */
-module.exports.listDirectory = function(req, res) {
-    if (req.query.path) {
-        let folderPath = req.query.path;
+function getFullPath(subPath) {
+    let fullPath = null;
+    if (subPath) {
+        let folderPath = subPath;
         if (!folderPath.startsWith('/')) {
             folderPath = '/' + folderPath;
         }
@@ -66,19 +67,30 @@ module.exports.listDirectory = function(req, res) {
         if ((folderPath.indexOf('..') !== -1) || (folderPath.indexOf('./') !== -1)) {
             folderPath = '';
         }
-        currentDir = rootFolder + folderPath;
-    } else {
+        fullPath = rootFolder + folderPath;
+    }
+    return fullPath;
+}
+
+/**
+ * Lists a directory contents.
+ * @param req
+ * @param res
+ */
+module.exports.listDirectory = function(req, res) {
+    currentDir = getFullPath(req.query.path);
+    if (!currentDir) {
         currentDir = rootFolder;
+    }
+    if (!fs.existsSync(currentDir)) {
+        res.status(404).send({error : 'Invalid path'});
+        return;
     }
 
     fs.readdir(currentDir,(err, files) => {
         const filesList = [];
         if (!files) {
-            res.send({
-                path: [],
-                files: [],
-                error: 'No files found.'
-            });
+            res.status(404).send({error : 'No files found'});
             return;
         }
         files.forEach(file => {
@@ -110,5 +122,33 @@ module.exports.listDirectory = function(req, res) {
             path: resolvePath(currentDir),
             files: filesList
         });
+    });
+}
+
+/**
+ * Downloads a file.
+ * @param req
+ * @param res
+ */
+module.exports.downloadFile = function(req, res) {
+    const filePath = getFullPath(req.query.path);
+    if (!filePath || !fs.existsSync(filePath)) {
+        res.status(404).send({error : 'Invalid file path'});
+        return;
+    }
+    // Code snipped from: https://nodejs.org/en/knowledge/advanced/streams/how-to-use-fs-create-read-stream/
+
+    // This line opens the file as a readable stream
+    const readStream = fs.createReadStream(filePath);
+
+    // This will wait until we know the readable stream is actually valid before piping
+    readStream.on('open', function () {
+        // This just pipes the read stream to the response object (which goes to the client)
+        readStream.pipe(res);
+    });
+
+    // This catches any errors that happen while creating the readable stream (usually invalid names)
+    readStream.on('error', function(err) {
+        res.end(err);
     });
 }

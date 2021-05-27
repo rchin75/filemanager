@@ -33,9 +33,27 @@ export default function useFileSystem() {
         }
     }
 
+    /**
+     * Gets the contents of a text file.
+     * @param filePath file path.
+     * @return {Promise<null|any>}
+     */
+    async function getTextFileContents(filePath) {
+        const url = 'api/download';
+        const params = {
+            path : filePath ? filePath : ''
+        }
+        const result = await axios.get(url, {params});
+        if (result.data) {
+            return result.data;
+        }
+        return null;
+    }
+
     return {
         files,
         path,
-        listFiles
+        listFiles,
+        getTextFileContents
     }
 }

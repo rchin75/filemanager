@@ -50,6 +50,11 @@
             <file-details-panel v-bind:selected-file="selectedFile"></file-details-panel>
         </f7-popup>
 
+        <!-- A popup to view a file. -->
+        <f7-popup class="file-details-popup" :opened="viewFilePanelOpened" @popup:closed="viewFilePanelOpened = false">
+            <view-file-panel v-bind:selected-file="selectedFile"></view-file-panel>
+        </f7-popup>
+
     </f7-page>
 </template>
 <script>
@@ -58,10 +63,12 @@
     import { onMounted } from 'vue';
     import Breadcrumb from "../components/breadcrumb";
     import FileDetailsPanel from "../components/fileDetailsPanel";
+    import ViewFilePanel from "../components/viewFilePanel";
 
     const {files, path, listFiles} = useFileSystem();
 
     const popupOpened = ref(false);
+    const viewFilePanelOpened = ref(false);
 
     const selectedFile = ref(null);
 
@@ -109,7 +116,12 @@
         } else if (file.type === 'folder') {
             const folderPath = path.value.join('/') + '/' + file.name;
             listFiles(folderPath);
-        } // else open file
+            selectedFile.value = null;
+        } else {
+            // View the selected file.
+            selectedFile.value = file;
+            viewFilePanelOpened.value = true;
+        }
     }
 
     /**
@@ -130,7 +142,7 @@
     }
 
     export default {
-        components: {FileDetailsPanel, Breadcrumb},
+        components: {ViewFilePanel, FileDetailsPanel, Breadcrumb},
         props: {},
         setup() {
             onMounted(() => {
@@ -146,6 +158,7 @@
                 onDelete,
                 onInfo,
                 popupOpened,
+                viewFilePanelOpened,
                 selectedFile
             };
         }

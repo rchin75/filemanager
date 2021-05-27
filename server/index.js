@@ -5,6 +5,7 @@ const path = require('path');
 const fileSystemActions = require('./fileSystemActions');
 
 app.get('/files', fileSystemActions.listDirectory);
+app.get('/download', fileSystemActions.downloadFile);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
