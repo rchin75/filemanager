@@ -80,7 +80,7 @@
             function getContents() {
                 if (props.selectedFile) {
                     getTextFileContents(getFilePath()).then(fileContents =>{
-                        contents.value = fileContents.replace(/(?:\r\n|\r|\n)/g, '<br>');
+                        contents.value = '<pre>' + fileContents + '</pre>';
                     });
                 }
             }
