@@ -1,10 +1,25 @@
 <template>
     <f7-page>
-        <f7-navbar v-bind:title="selectedFile ? selectedFile.name : ''">
+        <f7-navbar>
+            <f7-nav-left>
+                <f7-link popup-close icon-f7="chevron_left"></f7-link>
+            </f7-nav-left>
+            <f7-nav-title v-bind:title="selectedFile ? selectedFile.name : ''"></f7-nav-title>
             <f7-nav-right>
-                <f7-link popup-close>Close</f7-link>
+                <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line"></f7-link>
+                <f7-link href="false" popover-open=".file-action-menu" icon-f7="ellipsis_vertical"></f7-link>
+                <!--<f7-link popup-close><f7-icon f7="multiply"></f7-icon></f7-link>-->
             </f7-nav-right>
         </f7-navbar>
+
+        <!-- The file action menu in the navbar -->
+        <f7-popover class="file-action-menu">
+            <f7-list>
+                <f7-list-item link popover-close title="Move to"></f7-list-item>
+                <f7-list-item link popover-close title="Rename"></f7-list-item>
+                <f7-list-item link popover-close title="Delete"></f7-list-item>
+            </f7-list>
+        </f7-popover>
 
         <span v-if="isType('image')" class="photo-frame-container">
             <img v-bind:src="getFileURL()" class="photo-frame">
@@ -68,6 +83,17 @@
             }
 
             /**
+             * Downloads the selected file.
+             */
+            function downloadFile() {
+                if (props.selectedFile) {
+                    const url = getFileURL();
+                    // Note: this download iframe is in index.html, so it won't reload every time this panel opens.
+                    document.getElementById('download_iframe').src = url;
+                }
+            }
+
+            /**
              * Gets the contents of a text file.
              */
             function getContents() {
@@ -92,6 +118,7 @@
             return {
                 getFileURL,
                 isType,
+                downloadFile,
                 contents
             }
         }

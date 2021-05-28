@@ -51,7 +51,12 @@
         </f7-popup>
 
         <!-- A popup to view a file. -->
-        <f7-popup class="file-details-popup" :opened="viewFilePanelOpened" @popup:closed="viewFilePanelOpened = false">
+        <f7-popup tablet-fullscreen
+                  :animate = "false"
+                  class="file-details-popup"
+                  :opened="viewFilePanelOpened"
+                  @popup:closed="viewFilePanelOpened = false"
+        >
             <view-file-panel v-bind:selected-file="selectedFile"></view-file-panel>
         </f7-popup>
 
