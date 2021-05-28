@@ -136,6 +136,22 @@ module.exports.downloadFile = function(req, res) {
         res.status(404).send({error : 'Invalid file path'});
         return;
     }
+
+    // Determine the headers
+    const stat = fs.statSync(filePath);
+    const file = filePath.split('/').pop();
+    const type = resolveFileType(file);
+    if (type === null) {
+        // This happens when the file type is not supported, see allowedFileTypes.
+        res.status(404).send({error : 'Invalid file path'});
+        return;
+    }
+    res.set({
+        'Content-Type': type,
+        'Content-Length': stat.size,
+        'Content-Disposition': 'attachment; filename="' + file +'";'
+    })
+
     // Code snipped from: https://nodejs.org/en/knowledge/advanced/streams/how-to-use-fs-create-read-stream/
 
     // This line opens the file as a readable stream

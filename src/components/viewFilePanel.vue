@@ -6,8 +6,11 @@
             </f7-nav-right>
         </f7-navbar>
 
-        <img v-bind:src="getFileURL()" v-if="isImage()">
-        <p v-else-if="isText" v-html="contents" class="text-content"></p>
+        <span v-if="isType('image')" class="photo-frame-container">
+            <img v-bind:src="getFileURL()" class="photo-frame">
+        </span>
+
+        <p v-else-if="isType('text')" v-html="contents" class="text-content"></p>
         <span v-else>No file preview available for this file type.</span>
 
     </f7-page>
@@ -53,22 +56,12 @@
             }
 
             /**
-             * Determines if the file is an image.
+             * Determines if the file is of type.
+             * @param type The type.
              * @return {boolean}
              */
-            function isImage() {
-                if (props.selectedFile && props.selectedFile.type.startsWith('image')) {
-                    return true;
-                }
-                return false;
-            }
-
-            /**
-             * Determines if the file contains text.
-             * @return {boolean}
-             */
-            function isText() {
-                if (props.selectedFile && props.selectedFile.type.startsWith('text')) {
+            function isType(type) {
+                if (props.selectedFile && props.selectedFile.type.startsWith(type)) {
                     return true;
                 }
                 return false;
@@ -80,21 +73,25 @@
             function getContents() {
                 if (props.selectedFile) {
                     getTextFileContents(getFilePath()).then(fileContents =>{
-                        contents.value = '<pre>' + fileContents + '</pre>';
+                        if (props.selectedFile.type === 'text/json') {
+                            // JSON will become an object so we must stringify it.
+                            contents.value = '<pre style="margin:0;">' + JSON.stringify(fileContents, null, 2) + '</pre>';
+                        } else {
+                            contents.value = '<pre style="margin:0;">' + fileContents + '</pre>';
+                        }
                     });
                 }
             }
             // We trigger this when the selected file changed.
             watch(() => props.selectedFile, () => {
-                if (isText()) {
+                if (isType('text')) {
                     getContents();
                 }
-            })
+            });
 
             return {
                 getFileURL,
-                isImage,
-                isText,
+                isType,
                 contents
             }
         }
@@ -103,5 +100,19 @@
 <style scoped>
     .text-content {
         padding: 10px;
+    }
+    .photo-frame-container {
+        display:flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    .photo-frame {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
     }
 </style>

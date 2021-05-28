@@ -59,7 +59,7 @@
 </template>
 <script>
     import useFileSystem from "../model/useFileSystem";
-    import {ref} from "vue";
+    import {ref, watch} from "vue";
     import { onMounted } from 'vue';
     import Breadcrumb from "../components/breadcrumb";
     import FileDetailsPanel from "../components/fileDetailsPanel";
@@ -116,7 +116,6 @@
         } else if (file.type === 'folder') {
             const folderPath = path.value.join('/') + '/' + file.name;
             listFiles(folderPath);
-            selectedFile.value = null;
         } else {
             // View the selected file.
             selectedFile.value = file;
@@ -140,6 +139,11 @@
     function onDelete(file) {
         console.log('Delete file', file);
     }
+
+    // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.
+    watch(() => path.value, () => {
+        selectedFile.value = null;
+    });
 
     export default {
         components: {ViewFilePanel, FileDetailsPanel, Breadcrumb},
