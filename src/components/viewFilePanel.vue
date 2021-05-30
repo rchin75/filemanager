@@ -21,11 +21,24 @@
             </f7-list>
         </f7-popover>
 
+        <!-- Show a photo -->
         <span v-if="isType('image')" class="photo-frame-container">
             <img v-bind:src="getFileURL()" class="photo-frame">
         </span>
 
-        <p v-else-if="isType('text')" v-html="contents" class="text-content"></p>
+        <!-- Text editor (for now readonly) -->
+        <div v-else-if="isType('text')" class="editor-frame" style="height:100%">
+            <v-ace-editor
+                    v-model:value="contents"
+                    readonly
+                    @init="editorInit"
+                    v-bind:lang="editorMode"
+                    theme="kr_theme"
+                    v-bind:options="editorOptions"
+                    style="height: 100%" />
+        </div>
+
+        <!-- In all other cases we do not support a preview -->
         <span v-else>No file preview available for this file type.</span>
 
     </f7-page>
@@ -33,14 +46,30 @@
 <script>
     import useFileSystem from "../model/useFileSystem";
     import {ref, watch} from 'vue';
+    import {VAceEditor} from 'vue3-ace-editor';
+    import 'ace-builds/src-noconflict/mode-javascript';
+    import 'ace-builds/src-noconflict/mode-json';
+    import 'ace-builds/src-noconflict/mode-html';
+    import 'ace-builds/src-noconflict/mode-text';
+    import 'ace-builds/src-noconflict/theme-kr_theme';
+    import ace from 'ace-builds/src-noconflict/ace';
+
     const {path, getTextFileContents} = useFileSystem();
+
+    // This is needed to prevent a console error.
+    ace.config.set("basePath", "ace-builds/src-noconflict/");
 
     export default {
         name: 'view-file-panel',
         props: ['selectedFile'],
+        components: {
+            VAceEditor
+        },
         setup(props) {
 
             const contents = ref('');
+            const editorMode = ref('javascript');
+            const editorOptions = ref({});
 
             /**
              * Gets the path of the file.
@@ -87,9 +116,8 @@
              */
             function downloadFile() {
                 if (props.selectedFile) {
-                    const url = getFileURL();
                     // Note: this download iframe is in index.html, so it won't reload every time this panel opens.
-                    document.getElementById('download_iframe').src = url;
+                    document.getElementById('download_iframe').src = getFileURL();
                 }
             }
 
@@ -100,26 +128,62 @@
                 if (props.selectedFile) {
                     getTextFileContents(getFilePath()).then(fileContents =>{
                         if (props.selectedFile.type === 'text/json') {
-                            // JSON will become an object so we must stringify it.
-                            contents.value = '<pre style="margin:0;">' + JSON.stringify(fileContents, null, 2) + '</pre>';
+                            contents.value = JSON.stringify(fileContents, null, 2);
                         } else {
-                            contents.value = '<pre style="margin:0;">' + fileContents + '</pre>';
+                            contents.value = fileContents;
                         }
                     });
+                }
+            }
+            /**
+             * Gets the editor mode.
+             */
+            function getEditorMode() {
+                if (props.selectedFile) {
+                    switch (props.selectedFile.type) {
+                        case 'text/json':
+                            editorMode.value = 'json';
+                            break;
+                        case 'text/javascript':
+                            editorMode.value = 'javascript';
+                            break;
+                        case 'text/html':
+                            editorMode.value = 'html';
+                            break;
+                        default:
+                            editorMode.value = 'text';
+                    }
+                    // The way vue3-ace-editor was implemented unfortunately doesn't allow changing the mode
+                    // using the 'lang' property. That is because there is no watcher for it.
+                    // Luckily the same can be achieved by editing the properties, which does have a watcher.
+                    // To see the source code: node_modules/vue3-ace-editor/index.js.
+                    editorOptions.value = {'mode' : 'ace/mode/' + editorMode.value};
                 }
             }
             // We trigger this when the selected file changed.
             watch(() => props.selectedFile, () => {
                 if (isType('text')) {
+                    getEditorMode();
                     getContents();
                 }
             });
+
+            /**
+             * Called when the editor initialized.
+             */
+            function editorInit() {
+                console.log('Ace editor initialized.');
+                // Does nothing yet. If not needed we may delete this later on.
+            }
 
             return {
                 getFileURL,
                 isType,
                 downloadFile,
-                contents
+                contents,
+                editorMode,
+                editorOptions,
+                editorInit
             }
         }
     }
