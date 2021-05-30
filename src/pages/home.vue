@@ -46,12 +46,15 @@
         </f7-list>
 
         <!-- A popup with file details. -->
-        <f7-popup class="file-details-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+        <f7-popup theme-dark color-theme="orange"
+                class="file-details-popup"
+                :opened="popupOpened"
+                @popup:closed="popupOpened = false">
             <file-details-panel v-bind:selected-file="selectedFile"></file-details-panel>
         </f7-popup>
 
         <!-- A popup to view a file. -->
-        <f7-popup tablet-fullscreen
+        <f7-popup tablet-fullscreen theme-dark color-theme="orange"
                   :animate = "false"
                   class="file-details-popup"
                   :opened="viewFilePanelOpened"
@@ -175,6 +178,6 @@
 </script>
 <style scoped>
     .page {
-        background-color: #eeeeee;
+        background-color: #3333333;
     }
 </style>
