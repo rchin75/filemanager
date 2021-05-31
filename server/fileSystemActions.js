@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
+const {config} = require('./config');
 
-console.log('Managed folder = ' + process.env.MANAGED_FOLDER);
-const rootFolder = process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './';
+console.log('Managed folder = ' + config.rootFolder);
 
 const allowedFileTypes = {
     'txt' : 'text/plain',
@@ -38,7 +38,7 @@ function resolveFileType(file) {
  * @returns {string[]}
  */
 function resolvePath(currentDir) {
-    const folderPath = currentDir.substring(rootFolder.length);
+    const folderPath = currentDir.substring(config.rootFolder.length);
     const elements = folderPath.split('/');
     const resolvedPath = [];
     elements.forEach(element => {

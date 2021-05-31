@@ -1,25 +1,32 @@
 const fs = require('fs');
-const rootFolder = process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './';
+const {config} = require('./config');
 
 /**
  * Validates the provided path (req.query.path).
- * @param req
- * @param res
- * @param next
+ * @param req Request.
+ * @param res Response.
+ * @param next Next.
  */
 module.exports.validatePath = function(req, res, next) {
     validate(req, res, next, false);
 }
 
+/**
+ * Validates the provided path and checks if it exists.
+ * @param req Request.
+ * @param res Response.
+ * @param next Next.
+ */
 module.exports.validatePathExists = function(req, res, next) {
     validate(req, res, next, true);
 }
 
 /**
  * Validates the provided path (req.query.path).
- * @param req
- * @param res
- * @param next
+ * @param req Request.
+ * @param res Response.
+ * @param next Next.
+ * @param {boolean} mustExist True if the path must exist.
  */
 function validate(req, res, next, mustExist) {
     const path = req.query.path;
@@ -50,7 +57,7 @@ function getFullPath(subPath) {
         if (!folderPath.startsWith('/')) {
             folderPath = '/' + folderPath;
         }
-        fullPath = rootFolder + folderPath;
+        fullPath = config.rootFolder + folderPath;
     }
     return fullPath;
 }
