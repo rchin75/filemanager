@@ -4,6 +4,7 @@
  */
 module.exports.config = {
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
+    hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
     allowedFileTypes : {
         'txt' : 'text/plain',
         'md' : 'text/markdown',
