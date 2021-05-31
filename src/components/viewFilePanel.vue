@@ -6,6 +6,7 @@
             </f7-nav-left>
             <f7-nav-title v-bind:title="selectedFile ? selectedFile.name : ''"></f7-nav-title>
             <f7-nav-right>
+                <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="isType('text')"></f7-link>
                 <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line"></f7-link>
                 <f7-link href="false" popover-open=".file-action-menu" icon-f7="ellipsis_vertical"></f7-link>
                 <!--<f7-link popup-close><f7-icon f7="multiply"></f7-icon></f7-link>-->
@@ -122,6 +123,13 @@
             }
 
             /**
+             * Saves the file. Applies only to text files.
+             */
+            function saveFile() {
+                // To be implemented.
+            }
+
+            /**
              * Gets the contents of a text file.
              */
             function getContents() {
@@ -180,6 +188,7 @@
                 getFileURL,
                 isType,
                 downloadFile,
+                saveFile,
                 contents,
                 editorMode,
                 editorOptions,
@@ -189,9 +198,6 @@
     }
 </script>
 <style scoped>
-    .text-content {
-        padding: 10px;
-    }
     .photo-frame-container {
         display:flex;
         width: 100%;

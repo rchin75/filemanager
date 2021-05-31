@@ -2,9 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 console.log('Managed folder = ' + process.env.MANAGED_FOLDER);
-
 const rootFolder = process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './';
-let currentDir = rootFolder;
 
 const allowedFileTypes = {
     'txt' : 'text/plain',
@@ -52,40 +50,12 @@ function resolvePath(currentDir) {
 }
 
 /**
- * Gets the full path.
- * @param {string} subPath A sub path.
- * @return {null} Full path or null.
- */
-function getFullPath(subPath) {
-    let fullPath = null;
-    if (subPath) {
-        let folderPath = subPath;
-        if (!folderPath.startsWith('/')) {
-            folderPath = '/' + folderPath;
-        }
-        // Validate
-        if ((folderPath.indexOf('..') !== -1) || (folderPath.indexOf('./') !== -1)) {
-            folderPath = '';
-        }
-        fullPath = rootFolder + folderPath;
-    }
-    return fullPath;
-}
-
-/**
  * Lists a directory contents.
  * @param req
  * @param res
  */
 module.exports.listDirectory = function(req, res) {
-    currentDir = getFullPath(req.query.path);
-    if (!currentDir) {
-        currentDir = rootFolder;
-    }
-    if (!fs.existsSync(currentDir)) {
-        res.status(404).send({error : 'Invalid path'});
-        return;
-    }
+    const currentDir = req.selectedPath;
 
     fs.readdir(currentDir,(err, files) => {
         const filesList = [];
@@ -131,11 +101,7 @@ module.exports.listDirectory = function(req, res) {
  * @param res
  */
 module.exports.downloadFile = function(req, res) {
-    const filePath = getFullPath(req.query.path);
-    if (!filePath || !fs.existsSync(filePath)) {
-        res.status(404).send({error : 'Invalid file path'});
-        return;
-    }
+    const filePath = req.selectedPath;
 
     // Determine the headers
     const stat = fs.statSync(filePath);

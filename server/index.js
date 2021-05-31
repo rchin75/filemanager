@@ -2,10 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
-const fileSystemActions = require('./fileSystemActions');
+const {listDirectory, downloadFile} = require('./fileSystemActions');
+const {validatePathExists} = require('./pathValidator');
 
-app.get('/files', fileSystemActions.listDirectory);
-app.get('/download', fileSystemActions.downloadFile);
+app.get('/files', validatePathExists, listDirectory);
+app.get('/download', validatePathExists, downloadFile);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

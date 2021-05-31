@@ -24,7 +24,7 @@ export default function useFileSystem() {
     async function listFiles(path) {
         const url = 'api/files';
         const params = {
-            path : path ? path : ''
+            path : path ? path : '/'
         }
         const result = await axios.get(url, {params});
         if (result.data) {
