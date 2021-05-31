@@ -4,38 +4,23 @@ const {config} = require('./config');
 
 console.log('Managed folder = ' + config.rootFolder);
 
-const allowedFileTypes = {
-    'txt' : 'text/plain',
-    'md' : 'text/markdown',
-    'html' : 'text/html',
-    'jpg' : 'image/jpeg',
-    'jpeg' : 'image/jpeg',
-    'png' : 'image/jpeg',
-    'gif' : 'image/gif',
-    'js' : 'text/javascript',
-    'csv' : 'text/csv',
-    'json' : 'text/json',
-    'pdf' : 'application/pdf',
-    'doc' : 'application/msword',
-}
-
 /**
  * Resolves the file type from the filename.
- * @param file The filename.
- * @returns {null|*}
+ * @param {string} file The filename.
+ * @returns {null|*} The file type.
  */
 function resolveFileType(file) {
     const extension = file.split('.').pop();
-    if (Object.prototype.hasOwnProperty.call(allowedFileTypes, extension)) {
-        return allowedFileTypes[extension];
+    if (Object.prototype.hasOwnProperty.call(config.allowedFileTypes, extension)) {
+        return config.allowedFileTypes[extension];
     }
     return null;
 }
 
 /**
  * Resolves the path.
- * @param currentDir Current directory (full path on the disk).
- * @returns {string[]}
+ * @param {string} currentDir Current directory (full path on the disk).
+ * @returns {string[]} The path array.
  */
 function resolvePath(currentDir) {
     const folderPath = currentDir.substring(config.rootFolder.length);
@@ -51,8 +36,8 @@ function resolvePath(currentDir) {
 
 /**
  * Lists a directory contents.
- * @param req
- * @param res
+ * @param req Request.
+ * @param res Response.
  */
 module.exports.listDirectory = function(req, res) {
     const currentDir = req.selectedPath;
@@ -97,8 +82,8 @@ module.exports.listDirectory = function(req, res) {
 
 /**
  * Downloads a file.
- * @param req
- * @param res
+ * @param req Request.
+ * @param res Response.
  */
 module.exports.downloadFile = function(req, res) {
     const filePath = req.selectedPath;
