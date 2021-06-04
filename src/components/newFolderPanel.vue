@@ -5,21 +5,21 @@
                 <f7-link sheet-close icon-f7="chevron_left"></f7-link>
             </div>
             <div class="right">
-                <f7-button outline sheet-close @click="createFile" :disabled="!valid" style="margin-right: 10px;">Create</f7-button>
+                <f7-button outline sheet-close @click="createNewFolder" :disabled="!valid" style="margin-right: 10px;">Create</f7-button>
             </div>
         </f7-toolbar>
         <f7-list no-hairlines-md>
             <f7-list-input
                     label="Name"
                     type="text"
-                    placeholder="File name"
+                    placeholder="Folder name"
                     clear-button
-                    error-message="Enter a valid file name."
+                    error-message="Enter a valid folder name."
                     required
                     validate
-                    pattern="([a-zA-Z0-9\s_\\.\-\(\):])+(.txt|.html|.js|.json|.md|.csv)$"
+                    pattern="([a-zA-Z0-9\s_\\.\-\(\):])+$"
                     :onValidate="(isValid) => {valid = isValid}"
-                    v-model:value="fileName"
+                    v-model:value="folderName"
             ></f7-list-input>
         </f7-list>
     </f7-page>
@@ -28,34 +28,34 @@
     import {ref} from "vue";
     import { f7 } from 'framework7-vue';
     import useFileSystem from "../model/useFileSystem";
-    const {createTextFile} = useFileSystem();
+    const {createFolder} = useFileSystem();
 
     export default {
-        name: 'new-file-panel',
+        name: 'new-folder-panel',
         props: [],
         setup() {
-            const fileName = ref(null);
+            const folderName = ref(null);
             const valid = ref(false);
 
-            function createFile() {
+            function createNewFolder() {
                 if (valid.value) {
-                    console.log('Creating file ' + fileName.value);
+                    console.log('Creating folder ' + folderName.value);
 
-                    createTextFile(fileName.value).then(()=>{
+                    createFolder(folderName.value).then(()=>{
                         // Reset:
-                        fileName.value = null;
+                        folderName.value = null;
                     }).catch((err) => {
-                        console.log("Failed to create file", err);
-                        fileName.value = null;
+                        console.log("Failed to create folder", err);
+                        folderName.value = null;
                         f7.preloader.hide();
                     });
                 }
             }
 
             return {
-                fileName,
+                folderName,
                 valid,
-                createFile
+                createNewFolder
             }
         }
     }

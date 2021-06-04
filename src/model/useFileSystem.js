@@ -94,12 +94,34 @@ export default function useFileSystem() {
         return result.data;
     }
 
+    /**
+     * Creates a new folder.
+     * @param folderName Folder name.
+     * @return {Promise<any>}
+     */
+    async function createFolder(folderName) {
+        f7.preloader.show();
+        const url = 'api/createFolder';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : thePath
+        }
+        const data = {
+            folderName
+        };
+        const result = await axios.post(url, data, {params});
+        await listFiles(thePath);
+        f7.preloader.hide();
+        return result.data;
+    }
+
     return {
         files,
         path,
         listFiles,
         getTextFileContents,
         saveTextFile,
-        createTextFile
+        createTextFile,
+        createFolder
     }
 }

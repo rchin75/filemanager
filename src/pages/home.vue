@@ -14,7 +14,7 @@
         <f7-popover class="action-menu">
             <f7-list>
                 <f7-list-item link="#" popover-close title="New file" @click="newFileOpened = true"></f7-list-item>
-                <f7-list-item link="#" popover-close title="New folder"></f7-list-item>
+                <f7-list-item link="#" popover-close title="New folder" @click="newFolderOpened = true"></f7-list-item>
             </f7-list>
         </f7-popover>
         <!-- The NavBar menu -->
@@ -67,7 +67,12 @@
 
         <!-- Form to create a new file. -->
         <f7-sheet  class="new-file-sheet" :opened="newFileOpened" @sheet:closed="newFileOpened = false">
-    §       <new-file-panel type="txt"></new-file-panel>
+           <new-file-panel></new-file-panel>
+        </f7-sheet>
+
+        <!-- Form to create a new folder. -->
+        <f7-sheet  class="new-folder-sheet" :opened="newFolderOpened" @sheet:closed="newFolderOpened = false">
+            <new-folder-panel></new-folder-panel>
         </f7-sheet>
 
     </f7-page>
@@ -81,6 +86,7 @@
     import ViewFilePanel from "../components/viewFilePanel";
     import useAuthentication from "../model/useAuthentication";
     import NewFilePanel from "../components/newFilePanel";
+    import NewFolderPanel from "../components/newFolderPanel";
     const {logout, user} = useAuthentication();
     const {files, path, listFiles} = useFileSystem();
 
@@ -94,6 +100,7 @@
     const swipingOut = ref(false);
 
     const newFileOpened = ref(false);
+    const newFolderOpened = ref(false);
 
     /** Keeps track of the selected file, */
     const selectedFile = ref(null);
@@ -176,7 +183,7 @@
     });
 
     export default {
-        components: {NewFilePanel, ViewFilePanel, FileDetailsPanel, Breadcrumb},
+        components: {NewFolderPanel, NewFilePanel, ViewFilePanel, FileDetailsPanel, Breadcrumb},
         props: {
             f7router: Object
         },
@@ -218,7 +225,8 @@
                 viewFilePanelOpened,
                 selectedFile,
                 swipingOut,
-                newFileOpened
+                newFileOpened,
+                newFolderOpened
             };
         }
     }

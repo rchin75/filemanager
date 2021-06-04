@@ -136,7 +136,7 @@ module.exports.saveFile = function(req, res) {
 }
 
 /**
- * Saves a text file.
+ * Creates a text file.
  * @param req Request.
  * @param res Response.
  */
@@ -155,5 +155,27 @@ module.exports.createFile = function(req, res) {
         res.json({saved:true});
     } else {
         res.status(400).json({error: 'File already exists.'});
+    }
+}
+
+/**
+ * Creates a folder.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.createFolder = function(req, res) {
+    const filePath = req.selectedPath;
+    const folderName = req.body.folderName;
+
+    if ((folderName.indexOf('..') !== -1) || (folderName.indexOf('/') !== -1) || (folderName.indexOf('\\') !== -1)) {
+        res.status(400).json({error: 'Invalid folder name'});
+    }
+
+    const folder = path.join(filePath, folderName);
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder);
+        res.json({saved:true});
+    } else {
+        res.status(400).json({error: 'Folder already exists.'});
     }
 }
