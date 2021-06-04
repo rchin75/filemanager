@@ -24,7 +24,7 @@
 
         <!-- Show a photo -->
         <span v-if="isType('image')" class="photo-frame-container">
-            <img v-bind:src="getFileURL()" class="photo-frame">
+            <img v-bind:src="fileURL" class="photo-frame">
         </span>
 
         <!-- Text editor (for now readonly) -->
@@ -72,6 +72,7 @@
             const contents = ref('');
             const editorMode = ref('javascript');
             const editorOptions = ref({});
+            const fileURL = ref('');
 
             /**
              * Gets the path of the file.
@@ -174,9 +175,14 @@
             }
             // We trigger this when the selected file changed.
             watch(() => props.selectedFile, () => {
+                fileURL.value = '';
                 if (isType('text')) {
                     getEditorMode();
                     getContents();
+                } else if (isType('image')) {
+                    window.setTimeout(() => {
+                        fileURL.value = getFileURL();
+                    }, 100)
                 }
             });
 
@@ -189,10 +195,10 @@
             }
 
             return {
-                getFileURL,
                 isType,
                 downloadFile,
                 saveFile,
+                fileURL,
                 contents,
                 editorMode,
                 editorOptions,
