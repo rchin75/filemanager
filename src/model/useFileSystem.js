@@ -73,11 +73,33 @@ export default function useFileSystem() {
         return result.data;
     }
 
+    /**
+     * Creates a new text file.
+     * @param filename Filename.
+     * @return {Promise<any>}
+     */
+    async function createTextFile(filename) {
+        f7.preloader.show();
+        const url = 'api/create';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : thePath
+        }
+        const data = {
+            filename
+        };
+        const result = await axios.post(url, data, {params});
+        await listFiles(thePath);
+        f7.preloader.hide();
+        return result.data;
+    }
+
     return {
         files,
         path,
         listFiles,
         getTextFileContents,
-        saveTextFile
+        saveTextFile,
+        createTextFile
     }
 }

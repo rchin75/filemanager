@@ -134,3 +134,26 @@ module.exports.saveFile = function(req, res) {
         res.status(400).json({error:'Cannot save text file. Invalid file contents'})
     }
 }
+
+/**
+ * Saves a text file.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.createFile = function(req, res) {
+    const filePath = req.selectedPath;
+    const filename = req.body.filename;
+    const type = resolveFileType(filename);
+    if (type === null) {
+        res.status(400).json({error: 'Invalid file type.'});
+        return;
+    }
+
+    const file = path.join(filePath, filename);
+    if (!fs.existsSync(file)) {
+        fs.writeFileSync(file, '');
+        res.json({saved:true});
+    } else {
+        res.status(400).json({error: 'File already exists.'});
+    }
+}

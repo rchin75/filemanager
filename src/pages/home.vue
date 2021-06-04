@@ -13,7 +13,7 @@
         <!-- The action menu in the navbar -->
         <f7-popover class="action-menu">
             <f7-list>
-                <f7-list-item link="#" popover-close title="New file"></f7-list-item>
+                <f7-list-item link="#" popover-close title="New file" @click="newFileOpened = true"></f7-list-item>
                 <f7-list-item link="#" popover-close title="New folder"></f7-list-item>
             </f7-list>
         </f7-popover>
@@ -65,6 +65,11 @@
             <view-file-panel v-bind:selected-file="selectedFile"></view-file-panel>
         </f7-popup>
 
+        <!-- Form to create a new file. -->
+        <f7-sheet  class="new-file-sheet" :opened="newFileOpened" @sheet:closed="newFileOpened = false">
+    §       <new-file-panel type="txt"></new-file-panel>
+        </f7-sheet>
+
     </f7-page>
 </template>
 <script>
@@ -75,6 +80,7 @@
     import FileDetailsPanel from "../components/fileDetailsPanel";
     import ViewFilePanel from "../components/viewFilePanel";
     import useAuthentication from "../model/useAuthentication";
+    import NewFilePanel from "../components/newFilePanel";
     const {logout, user} = useAuthentication();
     const {files, path, listFiles} = useFileSystem();
 
@@ -86,6 +92,8 @@
 
     /** True if performing a swipe out on a file. */
     const swipingOut = ref(false);
+
+    const newFileOpened = ref(false);
 
     /** Keeps track of the selected file, */
     const selectedFile = ref(null);
@@ -168,7 +176,7 @@
     });
 
     export default {
-        components: {ViewFilePanel, FileDetailsPanel, Breadcrumb},
+        components: {NewFilePanel, ViewFilePanel, FileDetailsPanel, Breadcrumb},
         props: {
             f7router: Object
         },
@@ -209,7 +217,8 @@
                 popupOpened,
                 viewFilePanelOpened,
                 selectedFile,
-                swipingOut
+                swipingOut,
+                newFileOpened
             };
         }
     }
