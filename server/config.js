@@ -5,6 +5,9 @@
 module.exports.config = {
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
     hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
+    // Temporary solution just for testing (not secure):
+    username: process.env.USERNAME ? process.env.USERNAME : 'admin',
+    password: process.env.PASSWORD ? process.env.PASSWORD : 'password',
     allowedFileTypes : {
         'txt' : 'text/plain',
         'md' : 'text/markdown',

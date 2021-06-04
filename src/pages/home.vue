@@ -21,7 +21,7 @@
         <f7-popover class="popover-menu">
             <f7-list>
                 <f7-list-item link="/about/" popover-close title="About"></f7-list-item>
-                <f7-list-item link="#" popover-close title="Logout"></f7-list-item>
+                <f7-list-item link="#" @click="onLogout" popover-close title="Logout"></f7-list-item>
             </f7-list>
         </f7-popover>
 
@@ -72,6 +72,8 @@
     import Breadcrumb from "../components/breadcrumb";
     import FileDetailsPanel from "../components/fileDetailsPanel";
     import ViewFilePanel from "../components/viewFilePanel";
+    import useAuthentication from "../model/useAuthentication";
+    const {logout, user} = useAuthentication();
 
     const {files, path, listFiles} = useFileSystem();
 
@@ -155,14 +157,34 @@
 
     export default {
         components: {ViewFilePanel, FileDetailsPanel, Breadcrumb},
-        props: {},
-        setup() {
+        props: {
+            f7router: Object
+        },
+        setup(props) {
             onMounted(() => {
-                console.log('mounted!')
-                window.setTimeout(function(){
-                    listFiles();
-                }, 100);
+                console.log('mounted!');
+
+                if (!user || !user.value) {
+                    // Timeout is needed to prevent F7 render errors.
+                    window.setTimeout(function(){
+                        props.f7router.navigate('/login');
+                    }, 100);
+                } else {
+                    // Timeout is needed to prevent F7 render errors.
+                    window.setTimeout(function(){
+                        listFiles();
+                    }, 100);
+                }
             });
+
+            /**
+             * Logout.
+             */
+            function onLogout() {
+                logout().then(()=>{
+                    props.f7router.navigate('/login');
+                });
+            }
 
             return {
                 files,
@@ -171,9 +193,10 @@
                 onOpen,
                 onDelete,
                 onInfo,
+                onLogout,
                 popupOpened,
                 viewFilePanelOpened,
-                selectedFile
+                selectedFile,
             };
         }
     }
