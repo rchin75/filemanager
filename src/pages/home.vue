@@ -159,7 +159,9 @@
         setup() {
             onMounted(() => {
                 console.log('mounted!')
-                listFiles();
+                window.setTimeout(function(){
+                    listFiles();
+                }, 100);
             });
 
             return {

@@ -1,5 +1,6 @@
 import {reactive, computed} from 'vue';
 import axios from "axios";
+import { f7 } from 'framework7-vue';
 
 /**
  * State representing the current folder of the file system.
@@ -22,11 +23,13 @@ export default function useFileSystem() {
      * @returns {Promise<void>}
      */
     async function listFiles(path) {
+        f7.preloader.show();
         const url = 'api/files';
         const params = {
             path : path ? path : '/'
         }
         const result = await axios.get(url, {params});
+        f7.preloader.hide();
         if (result.data) {
             state.files = result.data.files;
             state.path = result.data.path;
