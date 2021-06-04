@@ -33,6 +33,8 @@
                     v-bind:footer="$filters.formatDate(file.updated) + ' , ' + $filters.formatSize(file.size)"
                     swipeout
                     @swipeout:deleted="onDelete(file)"
+                    @swipeout:open="swipingOut = true"
+                    @swipeout:closed="swipingOut = false"
                     @click="onOpen(file)"
                     link="#">
                 <template #media>
@@ -74,12 +76,18 @@
     import ViewFilePanel from "../components/viewFilePanel";
     import useAuthentication from "../model/useAuthentication";
     const {logout, user} = useAuthentication();
-
     const {files, path, listFiles} = useFileSystem();
 
+    /** True to open the file details popup. */
     const popupOpened = ref(false);
+
+    /** True to open the file panel. */
     const viewFilePanelOpened = ref(false);
 
+    /** True if performing a swipe out on a file. */
+    const swipingOut = ref(false);
+
+    /** Keeps track of the selected file, */
     const selectedFile = ref(null);
 
     /**
@@ -120,6 +128,10 @@
      * @param file The selected file.
      */
     function onOpen(file) {
+        // Prevent opening the file when in swipe out mode.
+        if (swipingOut.value) {
+            return;
+        }
         if (!file) {
             // If no file was provided we open the root folder.
             listFiles();
@@ -163,7 +175,7 @@
         setup(props) {
             onMounted(() => {
                 console.log('mounted!');
-
+                // Login if no user, otherwise list the files.
                 if (!user || !user.value) {
                     // Timeout is needed to prevent F7 render errors.
                     window.setTimeout(function(){
@@ -197,12 +209,13 @@
                 popupOpened,
                 viewFilePanelOpened,
                 selectedFile,
+                swipingOut
             };
         }
     }
 </script>
 <style scoped>
     .page {
-        background-color: #3333333;
+        background-color: #333333;
     }
 </style>

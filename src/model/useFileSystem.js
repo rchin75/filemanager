@@ -53,10 +53,31 @@ export default function useFileSystem() {
         return null;
     }
 
+    /**
+     * Saves a text file.
+     * @param filePath The file path.
+     * @param contents The contents to save.
+     * @return {Promise<any>}
+     */
+    async function saveTextFile(filePath, contents) {
+        f7.preloader.show();
+        const url = 'api/save';
+        const params = {
+            path : filePath ? filePath : ''
+        }
+        const data = {
+            contents
+        };
+        const result = await axios.post(url, data, {params});
+        f7.preloader.hide();
+        return result.data;
+    }
+
     return {
         files,
         path,
         listFiles,
-        getTextFileContents
+        getTextFileContents,
+        saveTextFile
     }
 }

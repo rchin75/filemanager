@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
-const {listDirectory, downloadFile} = require('./fileSystemActions');
+const {listDirectory, downloadFile, saveFile} = require('./fileSystemActions');
 const {validatePathExists} = require('./pathValidator');
 const {config} = require('./config');
 
@@ -30,6 +30,7 @@ app.post('/api/logout', function(req, res){
 // File actions.
 app.get('/api/files', isLoggedIn, validatePathExists, listDirectory);
 app.get('/api/download', isLoggedIn, validatePathExists, downloadFile);
+app.post('/api/save', isLoggedIn, validatePathExists, saveFile);
 
 app.use(express.static(path.join(__dirname, '../dist')));
 

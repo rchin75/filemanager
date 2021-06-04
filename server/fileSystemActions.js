@@ -119,3 +119,18 @@ module.exports.downloadFile = function(req, res) {
         res.end(err);
     });
 }
+
+/**
+ * Saves a text file.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.saveFile = function(req, res) {
+    const filePath = req.selectedPath;
+    if (req.body && req.body.contents) {
+        fs.writeFileSync(filePath, req.body.contents);
+        res.json({saved:true});
+    } else {
+        res.status(400).json({error:'Cannot save text file. Invalid file contents'})
+    }
+}

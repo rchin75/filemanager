@@ -6,8 +6,9 @@
             </f7-nav-left>
             <f7-nav-title v-bind:title="selectedFile ? selectedFile.name : ''"></f7-nav-title>
             <f7-nav-right>
-                <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="isType('text')"></f7-link>
-                <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line"></f7-link>
+                <f7-link href="false" @click="editMode = true" icon-f7="pencil" v-if="!editMode && isType('text')"></f7-link>
+                <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="editMode && isType('text')"></f7-link>
+                <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line" v-if="!editMode"></f7-link>
                 <f7-link href="false" popover-open=".file-action-menu" icon-f7="ellipsis_vertical"></f7-link>
                 <!--<f7-link popup-close><f7-icon f7="multiply"></f7-icon></f7-link>-->
             </f7-nav-right>
@@ -27,11 +28,11 @@
             <img v-bind:src="fileURL" class="photo-frame">
         </span>
 
-        <!-- Text editor (for now readonly) -->
+        <!-- Text editor -->
         <div v-else-if="isType('text')" class="editor-frame" style="height:100%">
             <v-ace-editor
                     v-model:value="contents"
-                    readonly
+                    v-bind:readonly="!editMode"
                     @init="editorInit"
                     v-bind:lang="editorMode"
                     theme="kr_theme"
@@ -56,7 +57,7 @@
     import ace from 'ace-builds/src-noconflict/ace';
     import { f7 } from 'framework7-vue';
 
-    const {path, getTextFileContents} = useFileSystem();
+    const {path, getTextFileContents, saveTextFile} = useFileSystem();
 
     // This is needed to prevent a console error.
     ace.config.set("basePath", "ace-builds/src-noconflict/");
@@ -73,6 +74,7 @@
             const editorMode = ref('javascript');
             const editorOptions = ref({});
             const fileURL = ref('');
+            const editMode = ref(false);
 
             /**
              * Gets the path of the file.
@@ -128,7 +130,10 @@
              * Saves the file. Applies only to text files.
              */
             function saveFile() {
-                // To be implemented.
+                saveTextFile(getFilePath(), contents.value).then(()=>{
+                    // On successful save leave the edit mode.
+                    editMode.value = false;
+                })
             }
 
             /**
@@ -176,6 +181,7 @@
             // We trigger this when the selected file changed.
             watch(() => props.selectedFile, () => {
                 fileURL.value = '';
+                editMode.value = false;
                 if (isType('text')) {
                     getEditorMode();
                     getContents();
@@ -202,6 +208,7 @@
                 contents,
                 editorMode,
                 editorOptions,
+                editMode,
                 editorInit
             }
         }
