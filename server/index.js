@@ -14,26 +14,30 @@ app.use(require('express-session')({ secret: 'keyboard cat', resave: false, save
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.post('/login',
+// Authentication actions.
+app.post('/api/login',
     passport.authenticate('local', {  }),
     function(req, res) {
-        //res.redirect('/');
         res.json({user: req.user});
     }
 );
 
-app.post('/logout', function(req, res){
+app.post('/api/logout', function(req, res){
     req.logout();
     res.json({user: null});
 });
 
-app.get('/files', isLoggedIn, validatePathExists, listDirectory);
-app.get('/download', isLoggedIn, validatePathExists, downloadFile);
+// File actions.
+app.get('/api/files', isLoggedIn, validatePathExists, listDirectory);
+app.get('/api/download', isLoggedIn, validatePathExists, downloadFile);
+
+app.use(express.static(path.join(__dirname, '../dist')));
 
 if (config.hostRootFolder) {
-    app.use(express.static(path.join(__dirname, '../' + config.rootFolder)));
+    app.use('/public', express.static(path.join(__dirname, '../' + config.rootFolder)));
 } else {
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use('/public', express.static(path.join(__dirname, 'public')));
 }
+
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));
