@@ -1,14 +1,16 @@
 require('dotenv').config();
 
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const app = express();
 const path = require('path');
-const {listDirectory, downloadFile, saveFile, createFile, createFolder, deleteFile} = require('./fileSystemActions');
+const {listDirectory, downloadFile, saveFile, createFile, createFolder, deleteFile, uploadFile} = require('./fileSystemActions');
 const {validatePathExists} = require('./pathValidator');
 const {config} = require('./config');
 
 const {passport, isLoggedIn} = require('./authentication');
 
+app.use(fileUpload());
 app.use(express.json());
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
@@ -34,6 +36,7 @@ app.post('/api/save', isLoggedIn, validatePathExists, saveFile);
 app.post('/api/create', isLoggedIn, validatePathExists, createFile);
 app.post('/api/createFolder', isLoggedIn, validatePathExists, createFolder);
 app.delete('/api/delete', isLoggedIn, validatePathExists, deleteFile);
+app.post('/api/upload', isLoggedIn, validatePathExists, uploadFile);
 
 app.use(express.static(path.join(__dirname, '../dist')));
 

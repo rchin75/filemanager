@@ -13,6 +13,7 @@
         <!-- The action menu in the navbar -->
         <f7-popover class="action-menu">
             <f7-list>
+                <f7-list-item link="#" popover-close title="Upload file" @click="uploadFileOpened = true"></f7-list-item>
                 <f7-list-item link="#" popover-close title="New file" @click="newFileOpened = true"></f7-list-item>
                 <f7-list-item link="#" popover-close title="New folder" @click="newFolderOpened = true"></f7-list-item>
             </f7-list>
@@ -65,6 +66,11 @@
             <view-file-panel v-bind:selected-file="selectedFile"></view-file-panel>
         </f7-popup>
 
+        <!-- Form to upload a file. -->
+        <f7-sheet  class="upload-file-sheet" :opened="uploadFileOpened" @sheet:closed="uploadFileOpened = false">
+            <upload-file-panel></upload-file-panel>
+        </f7-sheet>
+
         <!-- Form to create a new file. -->
         <f7-sheet  class="new-file-sheet" :opened="newFileOpened" @sheet:closed="newFileOpened = false">
            <new-file-panel></new-file-panel>
@@ -87,6 +93,7 @@
     import useAuthentication from "../model/useAuthentication";
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
+    import UploadFilePanel from "../components/uploadFilePanel";
     const {logout, user} = useAuthentication();
     const {files, path, listFiles, deleteFile} = useFileSystem();
 
@@ -99,6 +106,7 @@
     /** True if performing a swipe out on a file. */
     const swipingOut = ref(false);
 
+    const uploadFileOpened = ref(false);
     const newFileOpened = ref(false);
     const newFolderOpened = ref(false);
 
@@ -189,7 +197,7 @@
     });
 
     export default {
-        components: {NewFolderPanel, NewFilePanel, ViewFilePanel, FileDetailsPanel, Breadcrumb},
+        components: {UploadFilePanel, NewFolderPanel, NewFilePanel, ViewFilePanel, FileDetailsPanel, Breadcrumb},
         props: {
             f7router: Object
         },
@@ -231,6 +239,7 @@
                 viewFilePanelOpened,
                 selectedFile,
                 swipingOut,
+                uploadFileOpened,
                 newFileOpened,
                 newFolderOpened
             };

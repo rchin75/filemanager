@@ -119,7 +119,8 @@ export default function useFileSystem() {
             return result.data;
         } catch(ex) {
             f7.preloader.hide();
-            notify('Error', 'Could not create text file.');
+            const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not create text file.';
+            notify('Error', msg);
             throw (ex);
         }
 
@@ -147,7 +148,8 @@ export default function useFileSystem() {
             return result.data;
         } catch(ex) {
             f7.preloader.hide();
-            notify('Error', 'Could not create folder.');
+            const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not create folder.';
+            notify('Error', msg);
             throw (ex);
         }
     }
@@ -179,6 +181,36 @@ export default function useFileSystem() {
         }
     }
 
+    /**
+     * Uploads a file.
+     * @param file The file to upload.
+     * @return {Promise<void>}
+     */
+    async function uploadFile(file) {
+        f7.preloader.show();
+        const formData = new FormData();
+        formData.append("theFile", file.files[0]);
+        const url = 'api/upload';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : thePath
+        }
+        try {
+            await axios.post(url, formData, { params,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            await listFiles(thePath);
+            f7.preloader.hide();
+        } catch (ex) {
+            f7.preloader.hide();
+            const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not upload file.';
+            notify('Upload failed', msg);
+            throw(ex);
+        }
+    }
+
     return {
         files,
         path,
@@ -187,6 +219,7 @@ export default function useFileSystem() {
         saveTextFile,
         createTextFile,
         createFolder,
-        deleteFile
+        deleteFile,
+        uploadFile
     }
 }

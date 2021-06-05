@@ -168,7 +168,7 @@ module.exports.createFolder = function(req, res) {
     const folderName = req.body.folderName;
 
     if ((folderName.indexOf('..') !== -1) || (folderName.indexOf('/') !== -1) || (folderName.indexOf('\\') !== -1)) {
-        res.status(400).json({error: 'Invalid folder name'});
+        res.status(400).json({error: 'Invalid folder name.'});
     }
 
     const folder = path.join(filePath, folderName);
@@ -202,4 +202,41 @@ module.exports.deleteFile = function(req, res) {
         console.log('Failed to delete file or folder', ex);
         res.status('400').json({error: 'Failed to delete file or folder'});
     }
+}
+
+/**
+ * Uploads a file.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.uploadFile = function(req, res) {
+    // The target folder.
+    const folderPath = req.selectedPath;
+
+    // see: https://github.com/richardgirges/express-fileupload/tree/master/example#basic-file-upload
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({error: 'No files were uploaded.'});
+    }
+
+    const theFile = req.files.theFile;
+
+    // Only upload allowed file types.
+    if (!resolveFileType(theFile.name)) {
+        return res.status(400).json({error: 'Invalid file type.'});
+    }
+
+    const uploadPath = path.join(folderPath , theFile.name);
+    if (fs.existsSync(uploadPath)) {
+        return res.status(400).json({error: 'File already exists.'});
+    }
+
+    // Use the mv() method to place the file somewhere on the server
+    theFile.mv(uploadPath, function(err) {
+        if (err) {
+            return res.status(500).json({error: err});
+        }
+        res.json({result: 'File uploaded!'});
+    });
+
 }
