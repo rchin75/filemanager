@@ -106,7 +106,7 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
-    const {logout, user} = useAuthentication();
+    const {logout, user, getUser} = useAuthentication();
     const {files, path, listFiles, deleteFile, renameFile} = useFileSystem();
 
     /** True to open the file details popup. */
@@ -252,7 +252,11 @@
                 if (!user || !user.value) {
                     // Timeout is needed to prevent F7 render errors.
                     window.setTimeout(function(){
-                        props.f7router.navigate('/login');
+                        getUser().then(()=>{
+                            listFiles();
+                        }).catch(()=>{
+                            props.f7router.navigate('/login');
+                        });
                     }, 100);
                 } else {
                     // Timeout is needed to prevent F7 render errors.

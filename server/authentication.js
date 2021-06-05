@@ -45,3 +45,12 @@ module.exports.isLoggedIn = function (req,res,next) {
     }
 }
 
+/**
+ * Gets the user if logged in.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.getUser = function(req, res) {
+    res.json({user: req.user});
+}
+

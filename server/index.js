@@ -8,7 +8,7 @@ const {listDirectory, downloadFile, saveFile, createFile, createFolder, deleteFi
 const {validatePathExists} = require('./pathValidator');
 const {config} = require('./config');
 
-const {passport, isLoggedIn} = require('./authentication');
+const {passport, isLoggedIn, getUser} = require('./authentication');
 
 app.use(fileUpload());
 app.use(express.json());
@@ -28,6 +28,8 @@ app.post('/api/logout', function(req, res){
     req.logout();
     res.json({user: null});
 });
+
+app.get('/api/user', isLoggedIn, getUser);
 
 // File actions.
 app.get('/api/files', isLoggedIn, validatePathExists, listDirectory);

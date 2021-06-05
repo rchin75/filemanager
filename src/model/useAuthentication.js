@@ -59,12 +59,33 @@ export default function useAuthentication() {
             notify('Logout Failed', 'Please try again.');
             throw (ex);
         }
+    }
 
+    /**
+     * Gets the user.
+     * @return {Promise<void>}
+     */
+    async function getUser() {
+        f7.preloader.show();
+        const url = 'api/user';
+        try {
+            const result = await axios.get(url);
+            f7.preloader.hide();
+            if (result.data) {
+                state.user = result.data.user;
+            }
+            return state.user;
+        } catch (ex) {
+            console.log('getUser error', ex);
+            f7.preloader.hide();
+            throw (ex);
+        }
     }
 
     return {
         user,
         login,
-        logout
+        logout,
+        getUser
     }
 }
