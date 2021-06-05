@@ -45,8 +45,6 @@ app.use(express.static(path.join(__dirname, '../dist')));
 
 if (config.hostRootFolder) {
     app.use('/public', express.static(path.join(__dirname, '../' + config.rootFolder)));
-} else {
-    app.use('/public', express.static(path.join(__dirname, 'public')));
 }
 
 app.listen(config.port, () => console.log('Server listening on port ' + config.port + '!'));
