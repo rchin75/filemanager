@@ -35,6 +35,25 @@ function resolvePath(currentDir) {
 }
 
 /**
+ * Validates a filename or foldername.
+ * @param filename Filename
+ * @return {boolean}
+ */
+function validateFilename(filename) {
+    const invalidCharacters = /[`!@#$%^&*()+={};':"\\|,<>?~]/;
+    if (!filename || (filename.length < 1)) {
+        return false;
+    } else if (invalidCharacters.test(filename)) {
+        return false;
+    } else if ((filename.indexOf('/') !== -1) || (filename.indexOf('..') !== -1)) {
+        return false;
+    } else if ((filename.startsWith(' ')) || (filename.endsWith(' ')) || (filename.startsWith('.'))) {
+        return false;
+    }
+    return true;
+}
+
+/**
  * Lists a directory contents.
  * @param req Request.
  * @param res Response.
@@ -147,6 +166,9 @@ module.exports.createFile = function(req, res) {
     if (type === null) {
         res.status(400).json({error: 'Invalid file type.'});
         return;
+    } else if (!validateFilename(filename)) {
+        res.status(400).json({error: 'Invalid filename.'});
+        return;
     }
 
     const file = path.join(filePath, filename);
@@ -167,7 +189,7 @@ module.exports.createFolder = function(req, res) {
     const filePath = req.selectedPath;
     const folderName = req.body.folderName;
 
-    if ((folderName.indexOf('..') !== -1) || (folderName.indexOf('/') !== -1) || (folderName.indexOf('\\') !== -1)) {
+    if (!validateFilename(folderName)) {
         res.status(400).json({error: 'Invalid folder name.'});
     }
 
@@ -238,5 +260,33 @@ module.exports.uploadFile = function(req, res) {
         }
         res.json({result: 'File uploaded!'});
     });
+
+}
+
+/**
+ * Renames a file.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.renameFile = function(req, res) {
+    // The target file.
+    const filePath = req.selectedPath;
+    const oldName = filePath.split('/').pop();
+    const newName = req.body.newName;
+    const folderPath = filePath.substring(0, filePath.length - oldName.length);
+    const stat = fs.statSync(filePath);
+    const isFile = stat.isFile();
+
+    // First validate the new file name.
+    if (!validateFilename(newName)) {
+        return res.status(400).json({error: 'Invalid new filename.'});
+    } else if (oldName === newName) {
+        return res.status(400).json({error: 'No new file name provided.'})
+    } else if (isFile && !resolveFileType(newName)) {
+        return res.status(400).json({error: 'Invalid new filename extension.'});
+    }
+
+    fs.renameSync(filePath, folderPath + newName);
+    res.json({result: newName});
 
 }

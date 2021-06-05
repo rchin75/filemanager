@@ -211,6 +211,35 @@ export default function useFileSystem() {
         }
     }
 
+    /**
+     * Renames a file or folder.
+     * @param filePath Full file path.
+     * @param newName New name.
+     * @return {Promise<any>}
+     */
+    async function renameFile(filePath, newName) {
+        f7.preloader.show();
+        const url = 'api/rename';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : filePath ? filePath : ''
+        }
+        const data = {
+            newName
+        };
+        try {
+            const result = await axios.post(url, data, {params});
+            await listFiles(thePath);
+            f7.preloader.hide();
+            return result.data;
+        } catch(ex) {
+            f7.preloader.hide();
+            const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not rename file.';
+            notify('Renaming failed', msg);
+            throw (ex);
+        }
+    }
+
     return {
         files,
         path,
@@ -220,6 +249,7 @@ export default function useFileSystem() {
         createTextFile,
         createFolder,
         deleteFile,
-        uploadFile
+        uploadFile,
+        renameFile
     }
 }

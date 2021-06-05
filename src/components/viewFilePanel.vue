@@ -9,19 +9,8 @@
                 <f7-link href="false" @click="editMode = true" icon-f7="pencil" v-if="!editMode && isType('text')"></f7-link>
                 <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="editMode && isType('text')"></f7-link>
                 <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line" v-if="!editMode"></f7-link>
-                <f7-link href="false" popover-open=".file-action-menu" icon-f7="ellipsis_vertical"></f7-link>
-                <!--<f7-link popup-close><f7-icon f7="multiply"></f7-icon></f7-link>-->
             </f7-nav-right>
         </f7-navbar>
-
-        <!-- The file action menu in the navbar -->
-        <f7-popover class="file-action-menu">
-            <f7-list>
-                <f7-list-item link popover-close title="Move to"></f7-list-item>
-                <f7-list-item link popover-close title="Rename"></f7-list-item>
-                <f7-list-item link popover-close title="Delete"></f7-list-item>
-            </f7-list>
-        </f7-popover>
 
         <!-- Show a photo -->
         <span v-if="isType('image')" class="photo-frame-container">

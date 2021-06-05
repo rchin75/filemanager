@@ -42,11 +42,22 @@
                     <f7-icon v-bind:f7="formatFileType(file.type)"></f7-icon>
                 </template>
                 <f7-swipeout-actions right>
-                    <f7-swipeout-button @click="onInfo(file)">Info</f7-swipeout-button>
+                    <f7-swipeout-button @click="onMore(file)">More</f7-swipeout-button>
+                    <f7-swipeout-button @click="onInfo(file)" color="orange">Info</f7-swipeout-button>
                     <f7-swipeout-button delete confirm-text="Are you sure you want to delete this item?">Delete</f7-swipeout-button>
                 </f7-swipeout-actions>
             </f7-list-item>
         </f7-list>
+
+        <!-- Action buttons -->
+        <f7-actions :opened="fileActionsOpened" @actions:closed="fileActionsOpened = false">
+            <f7-actions-group>
+                <f7-actions-label>File actions:</f7-actions-label>
+                <f7-actions-button @click="onRename">Rename</f7-actions-button>
+                <!--<f7-actions-button>Move</f7-actions-button>-->
+                <f7-actions-button color="red">Cancel</f7-actions-button>
+            </f7-actions-group>
+        </f7-actions>
 
         <!-- A popup with file details. -->
         <f7-popup theme-dark color-theme="orange"
@@ -87,6 +98,7 @@
     import useFileSystem from "../model/useFileSystem";
     import {ref, watch} from "vue";
     import { onMounted } from 'vue';
+    import { f7 } from 'framework7-vue';
     import Breadcrumb from "../components/breadcrumb";
     import FileDetailsPanel from "../components/fileDetailsPanel";
     import ViewFilePanel from "../components/viewFilePanel";
@@ -95,7 +107,7 @@
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
     const {logout, user} = useAuthentication();
-    const {files, path, listFiles, deleteFile} = useFileSystem();
+    const {files, path, listFiles, deleteFile, renameFile} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -109,6 +121,7 @@
     const uploadFileOpened = ref(false);
     const newFileOpened = ref(false);
     const newFolderOpened = ref(false);
+    const fileActionsOpened = ref(false);
 
     /** Keeps track of the selected file, */
     const selectedFile = ref(null);
@@ -178,6 +191,37 @@
     }
 
     /**
+     * Shows more actions for the selected file.
+     * @param file The selected file.
+     */
+    function onMore(file) {
+        selectedFile.value = file;
+        fileActionsOpened.value = true;
+    }
+
+    /**
+     * Renames the selected file.
+     */
+    function onRename() {
+        if (!selectedFile.value) {
+            // Just in case.
+            return;
+        }
+        f7.dialog.prompt('Enter a new name', 'Rename', (value)=>{
+            // On ok.
+            console.log('new name = ' + value);
+            const filePath = path.value.join('/') + '/' + selectedFile.value.name;
+            renameFile(filePath, value).then( () => {
+                swipingOut.value = false;
+            }).catch(()=>{
+                swipingOut.value = false;
+            });
+        }, () => {
+            // On cancel
+        }, selectedFile.value.name);
+    }
+
+    /**
      * Deletes the selected file.
      * @param file The selected file.
      */
@@ -234,6 +278,8 @@
                 onOpen,
                 onDelete,
                 onInfo,
+                onMore,
+                onRename,
                 onLogout,
                 popupOpened,
                 viewFilePanelOpened,
@@ -241,7 +287,8 @@
                 swipingOut,
                 uploadFileOpened,
                 newFileOpened,
-                newFolderOpened
+                newFolderOpened,
+                fileActionsOpened
             };
         }
     }
