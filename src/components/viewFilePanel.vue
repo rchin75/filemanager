@@ -55,7 +55,6 @@
     import 'ace-builds/src-noconflict/mode-text';
     import 'ace-builds/src-noconflict/theme-kr_theme';
     import ace from 'ace-builds/src-noconflict/ace';
-    import { f7 } from 'framework7-vue';
 
     const {path, getTextFileContents, saveTextFile} = useFileSystem();
 
@@ -142,14 +141,12 @@
             function getContents() {
                 if (props.selectedFile) {
                     contents.value = "";
-                    f7.preloader.show();
                     getTextFileContents(getFilePath()).then(fileContents =>{
                         if (props.selectedFile.type === 'text/json') {
                             contents.value = JSON.stringify(fileContents, null, 2);
                         } else {
                             contents.value = fileContents;
                         }
-                        f7.preloader.hide();
                     });
                 }
             }

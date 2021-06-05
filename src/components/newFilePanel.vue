@@ -26,7 +26,6 @@
 </template>
 <script>
     import {ref} from "vue";
-    import { f7 } from 'framework7-vue';
     import useFileSystem from "../model/useFileSystem";
     const {createTextFile} = useFileSystem();
 
@@ -47,7 +46,6 @@
                     }).catch((err) => {
                         console.log("Failed to create file", err);
                         fileName.value = null;
-                        f7.preloader.hide();
                     });
                 }
             }

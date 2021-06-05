@@ -1,6 +1,7 @@
 import {reactive, computed} from 'vue';
 import axios from "axios";
 import { f7 } from 'framework7-vue';
+import {notify} from "../notifications";
 
 /**
  * State representing the current folder of the file system.
@@ -28,12 +29,21 @@ export default function useFileSystem() {
         const params = {
             path : path ? path : '/'
         }
-        const result = await axios.get(url, {params});
-        f7.preloader.hide();
-        if (result.data) {
-            state.files = result.data.files;
-            state.path = result.data.path;
+        try {
+            const result = await axios.get(url, {params});
+            f7.preloader.hide();
+            if (result.data) {
+                state.files = result.data.files;
+                state.path = result.data.path;
+            }
+        } catch(ex) {
+            state.files = [];
+            state.path = [];
+            f7.preloader.hide();
+            notify('Error', 'Could not list files.');
+            throw (ex);
         }
+
     }
 
     /**
@@ -42,13 +52,21 @@ export default function useFileSystem() {
      * @return {Promise<null|any>}
      */
     async function getTextFileContents(filePath) {
+        f7.preloader.show();
         const url = 'api/download';
         const params = {
             path : filePath ? filePath : ''
         }
-        const result = await axios.get(url, {params});
-        if (result.data) {
-            return result.data;
+        try {
+            const result = await axios.get(url, {params});
+            f7.preloader.hide();
+            if (result.data) {
+                return result.data;
+            }
+        } catch (ex) {
+            f7.preloader.hide();
+            notify('Error', 'Could not load file.');
+            throw (ex);
         }
         return null;
     }
@@ -68,9 +86,15 @@ export default function useFileSystem() {
         const data = {
             contents
         };
-        const result = await axios.post(url, data, {params});
-        f7.preloader.hide();
-        return result.data;
+        try {
+            const result = await axios.post(url, data, {params});
+            f7.preloader.hide();
+            return result.data;
+        } catch(ex) {
+            f7.preloader.hide();
+            notify('Error', 'Could not save file.');
+            throw (ex);
+        }
     }
 
     /**
@@ -88,10 +112,17 @@ export default function useFileSystem() {
         const data = {
             filename
         };
-        const result = await axios.post(url, data, {params});
-        await listFiles(thePath);
-        f7.preloader.hide();
-        return result.data;
+        try {
+            const result = await axios.post(url, data, {params});
+            await listFiles(thePath);
+            f7.preloader.hide();
+            return result.data;
+        } catch(ex) {
+            f7.preloader.hide();
+            notify('Error', 'Could not create text file.');
+            throw (ex);
+        }
+
     }
 
     /**
@@ -109,10 +140,16 @@ export default function useFileSystem() {
         const data = {
             folderName
         };
-        const result = await axios.post(url, data, {params});
-        await listFiles(thePath);
-        f7.preloader.hide();
-        return result.data;
+        try {
+            const result = await axios.post(url, data, {params});
+            await listFiles(thePath);
+            f7.preloader.hide();
+            return result.data;
+        } catch(ex) {
+            f7.preloader.hide();
+            notify('Error', 'Could not create folder.');
+            throw (ex);
+        }
     }
 
     return {
