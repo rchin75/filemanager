@@ -88,7 +88,7 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     const {logout, user} = useAuthentication();
-    const {files, path, listFiles} = useFileSystem();
+    const {files, path, listFiles, deleteFile} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -175,6 +175,12 @@
      */
     function onDelete(file) {
         console.log('Delete file', file);
+        const filePath = path.value.join('/') + '/' + file.name;
+        deleteFile(filePath).then( () => {
+            swipingOut.value = false;
+        }).catch(()=>{
+            swipingOut.value = false;
+        });
     }
 
     // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.

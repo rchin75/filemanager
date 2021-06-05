@@ -152,6 +152,33 @@ export default function useFileSystem() {
         }
     }
 
+    /**
+     * Deletes a file.
+     * @param filePath File path.
+     * @return {Promise<any>}
+     */
+    async function deleteFile(filePath) {
+        f7.preloader.show();
+        const url = 'api/delete';
+        const params = {
+            path : filePath ? filePath : ''
+        }
+        const thePath = '/' + state.path.join('/');
+        try {
+            const result = await axios.delete(url,{params});
+            await listFiles(thePath);
+            f7.preloader.hide();
+            if (result.data) {
+                return result.data;
+            }
+        } catch (ex) {
+            await listFiles(thePath);
+            f7.preloader.hide();
+            notify('Error', 'Could not delete file.');
+            throw (ex);
+        }
+    }
+
     return {
         files,
         path,
@@ -159,6 +186,7 @@ export default function useFileSystem() {
         getTextFileContents,
         saveTextFile,
         createTextFile,
-        createFolder
+        createFolder,
+        deleteFile
     }
 }

@@ -30,9 +30,14 @@ module.exports.validatePathExists = function(req, res, next) {
  */
 function validate(req, res, next, mustExist) {
     const path = req.query.path;
+    // All the characters we do not allow in a path.
+    // Note: spaces, forward slashes, underscores, minuses, and dots are allowed, only not in certain combinations, hence the extra if.
+    const invalidCharacters = /[`!@#$%^&*()+={};':"\\|,<>?~]/;
     if (!path) {
         res.status('404').json({error: 'Expected a path parameter'});
     } else if ((path.indexOf('..') !== -1) || (path.indexOf('./') !== -1) || (path.indexOf('\\') !== -1)) {
+        res.status('404').json({error: 'Invalid path'});
+    } else if (invalidCharacters.test(path)) {
         res.status('404').json({error: 'Invalid path'});
     } else {
         // The valid selected full path is added to the request.
