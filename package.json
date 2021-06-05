@@ -2,11 +2,13 @@
   "name": "filemanager",
   "version": "0.1.0",
   "private": true,
+  "bin": "./server/index.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "server": "nodemon --watch server -e js,json --delay 1000ms server/index.js"
+    "server": "nodemon --watch server -e js,json --delay 1000ms server/index.js",
+    "pkg": "pkg . "
   },
   "dependencies": {
     "ace-builds": "^1.4.12",
@@ -34,7 +36,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "pkg": "^5.2.1"
   },
   "eslintConfig": {
     "root": true,
@@ -54,5 +57,11 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "pkg": {
+    "scripts": "server/**/*.js",
+    "assets": "dist/**/*",
+    "targets": [ "node12-macos-x64" ],
+    "outputPath": "dist-server"
+  }
 }

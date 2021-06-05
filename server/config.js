@@ -3,6 +3,7 @@
  * @type {{rootFolder: *}}
  */
 module.exports.config = {
+    port : process.env.PORT ? parseInt(process.env.PORT) : 3000,
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
     hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
     // Temporary solution just for testing (not secure):
