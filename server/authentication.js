@@ -1,18 +1,30 @@
 const {config} = require('./config');
 const passport = require('passport');
+const {authenticateUser} = require('./users/userManagement');
 const LocalStrategy = require('passport-local').Strategy;
 
 // Configure local authentication.
 passport.use('local', new LocalStrategy({},
     function(username, password, cb) {
-        // For now we keep this super simple.
-        if ((username === config.username) && (password === config.password)) {
-            const user = {
-                username: username
+        if (config.username && config.password) {
+            // For testing purposes we can specify a plain text pw in .env.
+            if ((username === config.username) && (password === config.password)) {
+                const user = {
+                    username: username
+                }
+                return cb(null, user);
+            } else {
+                return cb(null, false, { message: 'Incorrect user credentials.' });
             }
-            return cb(null, user);
         } else {
-            return cb(null, false, { message: 'Incorrect user credentials.' });
+            // Read from users.js using hashed passwords. This is the preferred way!
+            authenticateUser(username, password).then(user => {
+                if (user) {
+                    return cb(null, user);
+                } else {
+                    return cb(null, false, { message: 'Incorrect user credentials.' });
+                }
+            });
         }
     }
 ));

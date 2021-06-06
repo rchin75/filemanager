@@ -6,9 +6,9 @@ module.exports.config = {
     port : process.env.PORT ? parseInt(process.env.PORT) : 3000,
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
     hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
-    // Temporary solution just for testing (not secure):
-    username: process.env.USERNAME ? process.env.USERNAME : 'admin',
-    password: process.env.PASSWORD ? process.env.PASSWORD : 'password',
+    // Just for testing purposes, do not use in production (create users.json instead):
+    username: process.env.USERNAME ? process.env.USERNAME : null,
+    password: process.env.PASSWORD ? process.env.PASSWORD : null,
     allowedFileTypes : {
         'txt' : 'text/plain',
         'md' : 'text/markdown',
