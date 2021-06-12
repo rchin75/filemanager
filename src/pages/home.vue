@@ -106,7 +106,7 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
-    const {logout, user, getUser} = useAuthentication();
+    const {logout, initializeLogin} = useAuthentication();
     const {files, path, listFiles, deleteFile, renameFile} = useFileSystem();
 
     /** True to open the file details popup. */
@@ -249,21 +249,11 @@
             onMounted(() => {
                 console.log('mounted!');
                 // Login if no user, otherwise list the files.
-                if (!user || !user.value) {
-                    // Timeout is needed to prevent F7 render errors.
-                    window.setTimeout(function(){
-                        getUser().then(()=>{
-                            listFiles();
-                        }).catch(()=>{
-                            props.f7router.navigate('/login');
-                        });
-                    }, 100);
-                } else {
-                    // Timeout is needed to prevent F7 render errors.
-                    window.setTimeout(function(){
-                        listFiles();
-                    }, 100);
-                }
+                initializeLogin(()=>{
+                    listFiles();
+                }, () => {
+                    props.f7router.navigate('/login');
+                })
             });
 
             /**

@@ -82,10 +82,34 @@ export default function useAuthentication() {
         }
     }
 
+    /**
+     * Initializes the login when the app starts. Use in onMounted in the main page..
+     * @param cb Callback when logged in (load the data).
+     * @param err Callback when not logged in (redirect to the login page)
+     */
+    function initializeLogin(cb, err) {
+        if (!user.value) {
+            // Timeout is needed to prevent F7 render errors.
+            window.setTimeout(function(){
+                getUser().then(()=>{
+                    cb();
+                }).catch(()=>{
+                    err();
+                });
+            }, 100);
+        } else {
+            // Timeout is needed to prevent F7 render errors.
+            window.setTimeout(function(){
+                cb();
+            }, 100);
+        }
+    }
+
     return {
         user,
         login,
         logout,
-        getUser
+        getUser,
+        initializeLogin
     }
 }
