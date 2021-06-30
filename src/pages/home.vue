@@ -190,9 +190,6 @@
             // View the selected file.
             selectedFile.value = file;
             viewFilePanelOpened.value = true;
-
-            // When opening a file we clear the clipboard. (May be optimized later_
-            clearClipboard();
         }
     }
 
