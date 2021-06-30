@@ -4,7 +4,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const app = express();
 const path = require('path');
-const {listDirectory, downloadFile, saveFile, createFile, createFolder, deleteFile, uploadFile, renameFile} = require('./fileSystemActions');
+const {listDirectory, downloadFile, saveFile, createFile, createFolder, deleteFile, uploadFile, renameFile, pasteFile} = require('./fileSystemActions');
 const {validatePathExists} = require('./pathValidator');
 const {config} = require('./config');
 
@@ -40,6 +40,7 @@ app.post('/api/createFolder', isLoggedIn, validatePathExists, createFolder);
 app.delete('/api/delete', isLoggedIn, validatePathExists, deleteFile);
 app.post('/api/upload', isLoggedIn, validatePathExists, uploadFile);
 app.post('/api/rename', isLoggedIn, validatePathExists, renameFile);
+app.post('/api/paste', isLoggedIn, validatePathExists, pasteFile);
 
 app.use(express.static(path.join(__dirname, '../dist')));
 

@@ -3,8 +3,9 @@
         <!-- The NavBar -->
         <f7-navbar title="File Manager">
             <f7-nav-right>
+                <f7-link icon-f7="arrow_down_doc" @click="onPaste" link="#" v-if="clipboard !== null"></f7-link>
                 <f7-link icon-f7="plus" popover-open=".action-menu"></f7-link>
-                <f7-link icon-f7="bars" popover-open=".popover-menu"></f7-link>
+                <f7-link icon-f7="ellipsis_vertical" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
             <f7-subnavbar>
                 <breadcrumb></breadcrumb>
@@ -54,6 +55,8 @@
             <f7-actions-group>
                 <f7-actions-label>File actions:</f7-actions-label>
                 <f7-actions-button @click="onRename">Rename</f7-actions-button>
+                <f7-actions-button @click="onCopy">Copy</f7-actions-button>
+                <f7-actions-button @click="onCut">Cut</f7-actions-button>
                 <!--<f7-actions-button>Move</f7-actions-button>-->
                 <f7-actions-button color="red">Cancel</f7-actions-button>
             </f7-actions-group>
@@ -106,8 +109,9 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
+    import {notify} from "../notifications";
     const {logout, initializeLogin} = useAuthentication();
-    const {files, path, listFiles, deleteFile, renameFile} = useFileSystem();
+    const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -164,6 +168,9 @@
      * @param file The selected file.
      */
     function onOpen(file) {
+        // When opening a file we clear the clipboard. (May be optimized later_
+        clearClipboard();
+
         // Prevent opening the file when in swipe out mode.
         if (swipingOut.value) {
             return;
@@ -207,6 +214,9 @@
             // Just in case.
             return;
         }
+        // For now we clear the clipboard. (Only needed when it has the selected file, so needs improvement later.)
+        clearClipboard();
+
         f7.dialog.prompt('Enter a new name', 'Rename', (value)=>{
             // On ok.
             console.log('new name = ' + value);
@@ -233,6 +243,41 @@
         }).catch(()=>{
             swipingOut.value = false;
         });
+        // For now we clear the clipboard. (Only needed when it has the selected file, so needs improvement later.)
+        clearClipboard();
+    }
+
+    /**
+     * Copies the selected file to the clipboard.
+     */
+    function onCopy() {
+        if (!selectedFile.value) {
+            return;
+        }
+        const filePath = path.value.join('/') + '/' + selectedFile.value.name;
+        addToClipboard(filePath, 'COPY');
+        notify('Copied', 'Paste the file in the target folder.');
+        swipingOut.value = false;
+    }
+
+    /**
+     * Cuts the selected file to the clipboard.
+     */
+    function onCut() {
+        if (!selectedFile.value) {
+            return;
+        }
+        const filePath = path.value.join('/') + '/' + selectedFile.value.name;
+        addToClipboard(filePath, 'CUT');
+        notify('Cut', 'Paste the file in the target folder.');
+        swipingOut.value = false;
+    }
+
+    /**
+     * Pastes a file here.
+     */
+    function onPaste() {
+        paste();
     }
 
     // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.
@@ -268,12 +313,16 @@
             return {
                 files,
                 path,
+                clipboard,
                 formatFileType,
                 onOpen,
                 onDelete,
                 onInfo,
                 onMore,
                 onRename,
+                onCopy,
+                onCut,
+                onPaste,
                 onLogout,
                 popupOpened,
                 viewFilePanelOpened,

@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const {config} = require('./config');
+const {getFullPath} = require('./pathValidator');
 
 console.log('Managed folder = ' + config.rootFolder);
 
@@ -288,5 +289,59 @@ module.exports.renameFile = function(req, res) {
 
     fs.renameSync(filePath, folderPath + newName);
     res.json({result: newName});
+}
 
+/**
+ * Moves or copies a file.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.pasteFile = function(req, res) {
+    const filePath = req.selectedPath;
+    const targetFolder = req.body.targetFolder;
+    const action = req.body.action;
+    const stat = fs.statSync(filePath);
+    const sourceFilename = filePath.split('/').pop();
+
+    // Validate the target folder.
+    // This contains duplicate code from pathValidator. Needs optimization later.
+    const invalidCharacters = /[`!@#$%^&*()+={};':"\\|,<>?~]/;
+    if ((!targetFolder) || (targetFolder.indexOf('..') !== -1) || (targetFolder.indexOf('./') !== -1) || (targetFolder.indexOf('\\') !== -1)) {
+        res.status('404').json({error: 'Invalid target folder'});
+    } else if (invalidCharacters.test(targetFolder)) {
+        res.status('404').json({error: 'Invalid target folder'});
+    }
+
+    // Determine the full target folder.
+    const fullTargetFolder = getFullPath(targetFolder);
+    if (!fs.existsSync(fullTargetFolder)) {
+        return res.status(400).json({error: 'Non existing target folder.'});
+    }
+
+    // Determine where to move/copy to:
+    let target = fullTargetFolder;
+    if (!target.endsWith('/')) {
+        target += '/';
+    }
+    target += sourceFilename;
+
+    // We do not overwrite an existing file.
+    if (fs.existsSync(target)) {
+        return res.status(400).json({error: 'File already exists in the target folder.'});
+    }
+
+    if (stat.isFile()) {
+        if (action === 'CUT') {
+            fs.copyFileSync(filePath, target);
+            fs.unlinkSync(filePath);
+        } else {
+            fs.copyFileSync(filePath, target);
+        }
+    } else if (stat.isDirectory()) {
+        return res.status(400).json({error: 'Copying/moving folders is not implemented yet.'});
+    } else {
+        return res.status(400).json({error: 'Invalid file type.'});
+    }
+
+    res.json({result: 'File pasted!'});
 }

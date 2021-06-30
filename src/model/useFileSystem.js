@@ -10,13 +10,15 @@ import {notify} from "../notifications";
 const state = reactive({
     files: [],
     // Folders of the path. Note root is [].
-    path: []
+    path: [],
+    clipboard: null
 });
 
 export default function useFileSystem() {
 
     const files = computed(() => state.files);
     const path = computed( () => state.path);
+    const clipboard = computed( ()=> state.clipboard);
 
     /**
      * Lists the available files and folders.
@@ -240,9 +242,64 @@ export default function useFileSystem() {
         }
     }
 
+    /**
+     * Adds a file to the clipboard.
+     * @param filePath File path.
+     * @param action Either "CUT" or "COPY"
+     */
+    function addToClipboard(filePath, action) {
+        state.clipboard = {
+            filePath,
+            action
+        }
+    }
+
+    /**
+     * Clears the clipboard.
+     */
+    function clearClipboard() {
+        state.clipboard = null;
+    }
+
+    /**
+     * Paste the file on the clipboard, if any.
+     * @return {Promise<any>}
+     */
+    async function paste() {
+        if (state.clipboard === null) {
+            notify('Paste', 'No file to paste');
+            return;
+        }
+        f7.preloader.show();
+        const url = 'api/paste';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : state.clipboard.filePath
+        }
+        const data = {
+            targetFolder: thePath,
+            action: state.clipboard.action
+        };
+        try {
+            const result = await axios.post(url, data, {params});
+            await listFiles(thePath);
+            state.clipboard = null;
+            f7.preloader.hide();
+            return result.data;
+        } catch(ex) {
+            f7.preloader.hide();
+            const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not paste file.';
+            notify('Pasting file failed', msg);
+            // Let's clear the clipboard even if it failed. (May need to be changed later if not convenient.)
+            state.clipboard = null;
+            throw (ex);
+        }
+    }
+
     return {
         files,
         path,
+        clipboard,
         listFiles,
         getTextFileContents,
         saveTextFile,
@@ -250,6 +307,9 @@ export default function useFileSystem() {
         createFolder,
         deleteFile,
         uploadFile,
-        renameFile
+        renameFile,
+        addToClipboard,
+        clearClipboard,
+        paste
     }
 }
