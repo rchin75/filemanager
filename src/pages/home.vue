@@ -3,7 +3,7 @@
         <!-- The NavBar -->
         <f7-navbar title="File Manager">
             <f7-nav-right>
-                <f7-link icon-f7="arrow_down_doc" @click="onPaste" link="#" v-if="clipboard !== null"></f7-link>
+                <f7-link icon-f7="arrow_down_doc" popover-open=".paste-menu" v-if="clipboard !== null"></f7-link>
                 <f7-link icon-f7="plus" popover-open=".action-menu"></f7-link>
                 <f7-link icon-f7="ellipsis_vertical" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
@@ -11,6 +11,14 @@
                 <breadcrumb></breadcrumb>
             </f7-subnavbar>
         </f7-navbar>
+
+        <!-- The paste menu in the navbar -->
+        <f7-popover class="paste-menu">
+            <f7-list>
+                <f7-list-item link="#" popover-close :title="clipboard && clipboard.action === 'CUT' ? 'Move file here' : 'Copy file here'" @click="onPaste"></f7-list-item>
+                <f7-list-item link="#" popover-close title="Clear" @click="onClear"></f7-list-item>
+            </f7-list>
+        </f7-popover>
         <!-- The action menu in the navbar -->
         <f7-popover class="action-menu">
             <f7-list>
@@ -278,6 +286,13 @@
         paste();
     }
 
+    /**
+     * Clears the clipboard.
+     */
+    function onClear() {
+        clearClipboard();
+    }
+
     // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.
     watch(() => path.value, () => {
         selectedFile.value = null;
@@ -321,6 +336,7 @@
                 onCopy,
                 onCut,
                 onPaste,
+                onClear,
                 onLogout,
                 popupOpened,
                 viewFilePanelOpened,
