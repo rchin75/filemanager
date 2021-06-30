@@ -109,7 +109,7 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
-    import {notify} from "../notifications";
+
     const {logout, initializeLogin} = useAuthentication();
     const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste} = useFileSystem();
 
@@ -256,7 +256,6 @@
         }
         const filePath = path.value.join('/') + '/' + selectedFile.value.name;
         addToClipboard(filePath, 'COPY');
-        notify('Copied', 'Paste the file in the target folder.');
         swipingOut.value = false;
     }
 
@@ -269,7 +268,6 @@
         }
         const filePath = path.value.join('/') + '/' + selectedFile.value.name;
         addToClipboard(filePath, 'CUT');
-        notify('Cut', 'Paste the file in the target folder.');
         swipingOut.value = false;
     }
 
