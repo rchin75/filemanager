@@ -44,7 +44,13 @@ app.post('/api/rename', isLoggedIn, validatePathExists, renameFile);
 app.use(express.static(path.join(__dirname, '../dist')));
 
 if (config.hostRootFolder) {
-    app.use('/public', express.static(path.join(__dirname, '../' + config.rootFolder)));
+    if (config.requireLogin) {
+        app.use('/public', isLoggedIn, express.static(config.rootFolder));
+        console.log('Hosting: ' + config.rootFolder + ' as /public (secured).');
+    } else {
+        app.use('/public', express.static(config.rootFolder));
+        console.log('Hosting: ' + config.rootFolder + ' as /public. (not secured)');
+    }
 }
 
 app.listen(config.port, () => console.log('Server listening on port ' + config.port + '!'));

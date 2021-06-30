@@ -6,6 +6,8 @@ module.exports.config = {
     port : process.env.PORT ? parseInt(process.env.PORT) : 3000,
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
     hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
+    // True if the hosted root folder requires the user to be logged in first.
+    requireLogin : process.env.REQUIRE_LOGIN === 'true',
     // Just for testing purposes, do not use in production (create users.json instead):
     username: process.env.USERNAME ? process.env.USERNAME : null,
     password: process.env.PASSWORD ? process.env.PASSWORD : null,
