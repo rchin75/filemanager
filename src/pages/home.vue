@@ -168,9 +168,6 @@
      * @param file The selected file.
      */
     function onOpen(file) {
-        // When opening a file we clear the clipboard. (May be optimized later_
-        clearClipboard();
-
         // Prevent opening the file when in swipe out mode.
         if (swipingOut.value) {
             return;
@@ -185,6 +182,9 @@
             // View the selected file.
             selectedFile.value = file;
             viewFilePanelOpened.value = true;
+
+            // When opening a file we clear the clipboard. (May be optimized later_
+            clearClipboard();
         }
     }
 
