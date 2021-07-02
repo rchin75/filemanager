@@ -107,6 +107,7 @@ module.exports.listDirectory = function(req, res) {
  */
 module.exports.downloadFile = function(req, res) {
     const filePath = req.selectedPath;
+    const embedded = req.query.embedded === 'true';
 
     // Determine the headers
     const stat = fs.statSync(filePath);
@@ -117,11 +118,19 @@ module.exports.downloadFile = function(req, res) {
         res.status(404).send({error : 'Invalid file path'});
         return;
     }
-    res.set({
-        'Content-Type': type,
-        'Content-Length': stat.size,
-        'Content-Disposition': 'attachment; filename="' + file +'";'
-    })
+    if (!embedded) {
+        res.set({
+            'Content-Type': type,
+            'Content-Length': stat.size,
+            'Content-Disposition': 'attachment; filename="' + file +'";'
+        })
+    } else {
+        res.set({
+            'Content-Type': type,
+            'Content-Length': stat.size,
+            'Content-Disposition': 'inline'
+        })
+    }
 
     // Code snipped from: https://nodejs.org/en/knowledge/advanced/streams/how-to-use-fs-create-read-stream/
 

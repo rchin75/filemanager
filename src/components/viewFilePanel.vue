@@ -17,6 +17,11 @@
             <img v-bind:src="fileURL" class="photo-frame">
         </span>
 
+        <!-- Show a pdf -->
+        <div v-if="isType('application/pdf')" class="pdf-frame-container">
+            <iframe v-bind:src="fileURL + '&embedded=true'" width="100%" height="100%" class="pdf-iframe"></iframe>
+        </div>
+
         <!-- Text editor -->
         <div v-else-if="isType('text')" class="editor-frame" style="height:100%">
             <v-ace-editor
@@ -175,7 +180,7 @@
                 if (isType('text')) {
                     getEditorMode();
                     getContents();
-                } else if (isType('image')) {
+                } else if (isType('image') || isType('application/pdf')) {
                     window.setTimeout(() => {
                         fileURL.value = getFileURL();
                     }, 100)
@@ -218,5 +223,12 @@
         width: auto;
         height: auto;
         object-fit: contain;
+    }
+    .pdf-frame-container {
+        height: 100%;
+        overflow: hidden;
+    }
+    .pdf-iframe {
+        border: 0;
     }
 </style>
