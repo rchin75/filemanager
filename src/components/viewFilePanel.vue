@@ -30,7 +30,7 @@
         </div>
 
         <!-- In all other cases we do not support a preview -->
-        <span v-else>No file preview available for this file type.</span>
+        <span v-else style="padding:20px; display: inline-block;">No preview available for this file type.</span>
 
     </f7-page>
 </template>
@@ -41,6 +41,7 @@
     import 'ace-builds/src-noconflict/mode-javascript';
     import 'ace-builds/src-noconflict/mode-json';
     import 'ace-builds/src-noconflict/mode-html';
+    import 'ace-builds/src-noconflict/mode-css';
     import 'ace-builds/src-noconflict/mode-text';
     import 'ace-builds/src-noconflict/theme-kr_theme';
     import ace from 'ace-builds/src-noconflict/ace';
@@ -153,6 +154,9 @@
                             break;
                         case 'text/html':
                             editorMode.value = 'html';
+                            break;
+                        case 'text/css':
+                            editorMode.value = 'css';
                             break;
                         default:
                             editorMode.value = 'text';

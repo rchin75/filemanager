@@ -17,7 +17,7 @@
                     error-message="Enter a valid file name."
                     required
                     validate
-                    pattern="([a-zA-Z0-9\s_\\.\-\(\):])+(.txt|.html|.js|.json|.md|.csv)$"
+                    pattern="([a-zA-Z0-9\s_\\.\-\(\):])+(.txt|.html|.css|.js|.json|.md|.csv)$"
                     :onValidate="(isValid) => {valid = isValid}"
                     v-model:value="fileName"
             ></f7-list-input>

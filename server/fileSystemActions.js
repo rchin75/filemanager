@@ -218,7 +218,7 @@ module.exports.deleteFile = function(req, res) {
             fs.unlinkSync(filePath);
             res.json({deleted: filePath});
         } else if (stat.isDirectory()) {
-            fs.rmdirSync(filePath);
+            fs.rmdirSync(filePath, { recursive: true });
             res.json({deleted: filePath});
         }
     } catch (ex) {
@@ -338,10 +338,34 @@ module.exports.pasteFile = function(req, res) {
             fs.copyFileSync(filePath, target);
         }
     } else if (stat.isDirectory()) {
-        return res.status(400).json({error: 'Copying/moving folders is not implemented yet.'});
+        // See below for the implementation of copyFolderSync.
+        copyFolderSync(filePath, target);
+        if (action === 'CUT') {
+            // Delete the original folder.
+            fs.rmdirSync(filePath, { recursive: true });
+        }
     } else {
         return res.status(400).json({error: 'Invalid file type.'});
     }
 
     res.json({result: 'File pasted!'});
+}
+
+/**
+ * Copies a folder recursively.
+ * @param from Source folder.
+ * @param to Target folder.
+ */
+function copyFolderSync(from, to) {
+    // Source: https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js
+    if (!fs.existsSync(to)) {
+        fs.mkdirSync(to);
+    }
+    fs.readdirSync(from).forEach(element => {
+        if (fs.lstatSync(path.join(from, element)).isFile()) {
+            fs.copyFileSync(path.join(from, element), path.join(to, element));
+        } else {
+            copyFolderSync(path.join(from, element), path.join(to, element));
+        }
+    });
 }

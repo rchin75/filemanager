@@ -15,6 +15,7 @@ module.exports.config = {
         'txt' : 'text/plain',
         'md' : 'text/markdown',
         'html' : 'text/html',
+        'css' : 'text/css',
         'jpg' : 'image/jpeg',
         'jpeg' : 'image/jpeg',
         'png' : 'image/jpeg',
@@ -24,5 +25,11 @@ module.exports.config = {
         'json' : 'text/json',
         'pdf' : 'application/pdf',
         'doc' : 'application/msword',
+        'docx' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xlsx' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'pptx' : 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'zip' : 'application/zip',
+        'mp4' : 'video/mp4',
+        'mp3' : 'audio/mpeg'
     }
 };

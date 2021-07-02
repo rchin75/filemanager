@@ -153,13 +153,30 @@
             case 'text/plain':
             case 'text/html':
             case 'text/javascript':
+            case 'text/css':
             case 'text/markdown':
             case 'text/json':
                 icon = 'doc_plaintext';
                 break;
             case 'application/msword':
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
             case 'application/pdf':
                 icon = 'doc_richtext';
+                break;
+            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                icon = 'doc-chart';
+                break;
+            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                icon = 'tv';
+                break;
+            case 'application/zip':
+                icon = 'archivebox';
+                break;
+            case 'audio/mpeg':
+                icon = 'music_note';
+                break;
+            case 'video/mp4':
+                icon = 'film';
                 break;
             case 'folder':
                 icon = 'folder';
