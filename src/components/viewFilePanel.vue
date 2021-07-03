@@ -22,6 +22,14 @@
             <iframe v-bind:src="fileURL + '&embedded=true'" width="100%" height="100%" class="pdf-iframe"></iframe>
         </div>
 
+        <div v-else-if="isType('text/markdown') && !editMode" class="markdown-frame">
+            <VueShowdown
+                    :markdown="contents"
+                    flavor="github"
+                    :options="{ emoji: true }"
+            ></VueShowdown>
+        </div>
+
         <!-- Text editor -->
         <div v-else-if="isType('text')" class="editor-frame" style="height:100%">
             <v-ace-editor
@@ -43,6 +51,7 @@
     import useFileSystem from "../model/useFileSystem";
     import {ref, watch} from 'vue';
     import {VAceEditor} from 'vue3-ace-editor';
+    import {VueShowdown} from 'vue-showdown';
     import 'ace-builds/src-noconflict/mode-javascript';
     import 'ace-builds/src-noconflict/mode-json';
     import 'ace-builds/src-noconflict/mode-html';
@@ -60,7 +69,8 @@
         name: 'view-file-panel',
         props: ['selectedFile'],
         components: {
-            VAceEditor
+            VAceEditor,
+            VueShowdown
         },
         setup(props) {
 
@@ -140,7 +150,7 @@
                         if (props.selectedFile.type === 'text/json') {
                             contents.value = JSON.stringify(fileContents, null, 2);
                         } else {
-                            contents.value = fileContents;
+                            contents.value = fileContents ? fileContents : '';
                         }
                     });
                 }
@@ -230,5 +240,10 @@
     }
     .pdf-iframe {
         border: 0;
+    }
+    .markdown-frame {
+        padding: 10px;
+        font-family: Verdana;
+        font-size: 16px;
     }
 </style>
