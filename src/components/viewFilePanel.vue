@@ -56,6 +56,7 @@
     import 'ace-builds/src-noconflict/mode-json';
     import 'ace-builds/src-noconflict/mode-html';
     import 'ace-builds/src-noconflict/mode-css';
+    import 'ace-builds/src-noconflict/mode-markdown';
     import 'ace-builds/src-noconflict/mode-text';
     import 'ace-builds/src-noconflict/theme-kr_theme';
     import ace from 'ace-builds/src-noconflict/ace';
@@ -160,6 +161,7 @@
              */
             function getEditorMode() {
                 if (props.selectedFile) {
+                    let wrap = false;
                     switch (props.selectedFile.type) {
                         case 'text/json':
                             editorMode.value = 'json';
@@ -173,14 +175,26 @@
                         case 'text/css':
                             editorMode.value = 'css';
                             break;
+                        case 'text/markdown':
+                            editorMode.value = 'markdown';
+                            wrap = true;
+                            break;
+                        case 'text/csv':
+                            editorMode.value = 'text';
+                            break;
                         default:
                             editorMode.value = 'text';
+                            wrap = true;
                     }
                     // The way vue3-ace-editor was implemented unfortunately doesn't allow changing the mode
                     // using the 'lang' property. That is because there is no watcher for it.
                     // Luckily the same can be achieved by editing the properties, which does have a watcher.
                     // To see the source code: node_modules/vue3-ace-editor/index.js.
-                    editorOptions.value = {'mode' : 'ace/mode/' + editorMode.value, 'fontSize' : '16px'};
+                    editorOptions.value = {
+                        'mode' : 'ace/mode/' + editorMode.value,
+                        'fontSize' : '16px',
+                        'wrap': wrap
+                    };
                 }
             }
             // We trigger this when the selected file changed.
