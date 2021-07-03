@@ -119,7 +119,7 @@
     import UploadFilePanel from "../components/uploadFilePanel";
 
     const {logout, initializeLogin} = useAuthentication();
-    const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste} = useFileSystem();
+    const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -322,7 +322,11 @@
                 console.log('mounted!');
                 // Login if no user, otherwise list the files.
                 initializeLogin(()=>{
-                    listFiles();
+                    // Load the app settings.
+                    getAppSettings().then(()=>{
+                        // List files.
+                        listFiles();
+                    });
                 }, () => {
                     props.f7router.navigate('/login');
                 })

@@ -4,6 +4,7 @@
  */
 module.exports.config = {
     port : process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    baseURL: process.env.BASE_URL ? process.env.BASE_URL : null,
     rootFolder : process.env.MANAGED_FOLDER ? process.env.MANAGED_FOLDER : './',
     hostRootFolder : process.env.HOST_MANAGED_FOLDER === 'true',
     // True if the hosted root folder requires the user to be logged in first.

@@ -11,14 +11,37 @@ const state = reactive({
     files: [],
     // Folders of the path. Note root is [].
     path: [],
-    clipboard: null
+    clipboard: null,
+    settings: {}
 });
 
 export default function useFileSystem() {
 
     const files = computed(() => state.files);
     const path = computed( () => state.path);
-    const clipboard = computed( ()=> state.clipboard);
+    const clipboard = computed( () => state.clipboard);
+    const appSettings = computed( () => state.settings);
+
+    /**
+     * Loads app settings.
+     * @return {Promise<void>}
+     */
+    async function getAppSettings() {
+        f7.preloader.show();
+        const url = 'api/settings';
+        const params = {}
+        try {
+            const result = await axios.get(url, {params});
+            f7.preloader.hide();
+            if (result.data) {
+                state.settings = result.data;
+            }
+        } catch(ex) {
+            notify('Error', 'Could not load app settings.');
+            f7.preloader.hide();
+            throw (ex);
+        }
+    }
 
     /**
      * Lists the available files and folders.
@@ -45,7 +68,6 @@ export default function useFileSystem() {
             notify('Error', 'Could not list files.');
             throw (ex);
         }
-
     }
 
     /**
@@ -300,6 +322,8 @@ export default function useFileSystem() {
         files,
         path,
         clipboard,
+        appSettings,
+        getAppSettings,
         listFiles,
         getTextFileContents,
         saveTextFile,

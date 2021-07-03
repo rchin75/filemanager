@@ -22,6 +22,11 @@
             <iframe v-bind:src="fileURL + '&embedded=true'" width="100%" height="100%" class="pdf-iframe"></iframe>
         </div>
 
+        <!-- Show a pdf -->
+        <div v-if="isType('text/html') && !editMode && appSettings.hostRootFolder" class="html-frame-container">
+            <iframe v-bind:src="webURL" width="100%" height="100%" class="html-iframe"></iframe>
+        </div>
+
         <div v-else-if="isType('text/markdown') && !editMode" class="markdown-frame">
             <VueShowdown
                     :markdown="contents"
@@ -61,7 +66,7 @@
     import 'ace-builds/src-noconflict/theme-kr_theme';
     import ace from 'ace-builds/src-noconflict/ace';
 
-    const {path, getTextFileContents, saveTextFile} = useFileSystem();
+    const {path, getTextFileContents, saveTextFile, appSettings} = useFileSystem();
 
     // This is needed to prevent a console error.
     ace.config.set("basePath", "ace-builds/src-noconflict/");
@@ -79,6 +84,7 @@
             const editorMode = ref('javascript');
             const editorOptions = ref({});
             const fileURL = ref('');
+            const webURL = ref('');
             const editMode = ref(false);
 
             /**
@@ -107,6 +113,19 @@
                     return '';
                 }
                 return 'api/download?path=' + getFilePath();
+            }
+
+            /**
+             * Gets the web address.
+             */
+            function getWebURL() {
+                const settings = appSettings.value;
+                if (!settings.baseURL) {
+                    console.log('Cannot determine URL: baseURL not specified.');
+                    return '';
+                }
+                const baseURL = settings.baseURL + '/public/';
+                return baseURL + getFilePath();
             }
 
             /**
@@ -201,6 +220,7 @@
             watch(() => props.selectedFile, () => {
                 fileURL.value = '';
                 editMode.value = false;
+                webURL.value = getWebURL();
                 if (isType('text')) {
                     getEditorMode();
                     getContents();
@@ -228,7 +248,9 @@
                 editorMode,
                 editorOptions,
                 editMode,
-                editorInit
+                editorInit,
+                webURL,
+                appSettings
             }
         }
     }
@@ -254,6 +276,15 @@
     }
     .pdf-iframe {
         border: 0;
+    }
+    .html-frame-container {
+        height: 100%;
+        overflow: hidden;
+    }
+    .html-iframe {
+        border: 0;
+        background-color: white;
+        color: black;
     }
     .markdown-frame {
         padding: 10px;

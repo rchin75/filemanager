@@ -31,6 +31,14 @@ app.post('/api/logout', function(req, res){
 
 app.get('/api/user', isLoggedIn, getUser);
 
+// System settings.
+app.get('/api/settings', (req,res) => {
+    res.json({
+        'baseURL': config.baseURL,
+        'hostRootFolder': config.hostRootFolder
+    });
+})
+
 // File actions.
 app.get('/api/files', isLoggedIn, validatePathExists, listDirectory);
 app.get('/api/download', isLoggedIn, validatePathExists, downloadFile);
