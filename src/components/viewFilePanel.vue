@@ -180,7 +180,7 @@
                     // using the 'lang' property. That is because there is no watcher for it.
                     // Luckily the same can be achieved by editing the properties, which does have a watcher.
                     // To see the source code: node_modules/vue3-ace-editor/index.js.
-                    editorOptions.value = {'mode' : 'ace/mode/' + editorMode.value};
+                    editorOptions.value = {'mode' : 'ace/mode/' + editorMode.value, 'fontSize' : '16px'};
                 }
             }
             // We trigger this when the selected file changed.
@@ -244,6 +244,6 @@
     .markdown-frame {
         padding: 10px;
         font-family: Verdana;
-        font-size: 16px;
+        font-size: 18px;
     }
 </style>
