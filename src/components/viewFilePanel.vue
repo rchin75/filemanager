@@ -8,6 +8,7 @@
             <f7-nav-right>
                 <f7-link href="false" @click="editMode = true" icon-f7="pencil" v-if="!editMode && isType('text')"></f7-link>
                 <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="editMode && isType('text')"></f7-link>
+                <f7-link href="false" @click="openWebURL" icon-f7="globe" v-if="isType('text/html') && !editMode && appSettings.hostRootFolder"></f7-link>
                 <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line" v-if="!editMode"></f7-link>
             </f7-nav-right>
         </f7-navbar>
@@ -175,6 +176,15 @@
                     });
                 }
             }
+
+            /**
+             * Opens this file in a new browser tab.
+             */
+            function openWebURL() {
+                const url = getWebURL();
+                window.open(url, '_blank');
+            }
+
             /**
              * Gets the editor mode.
              */
@@ -250,7 +260,8 @@
                 editMode,
                 editorInit,
                 webURL,
-                appSettings
+                appSettings,
+                openWebURL
             }
         }
     }
