@@ -330,4 +330,8 @@
         font-family: Verdana;
         font-size: 18px;
     }
+    /* /deep/ is needed because scoped doesn't allow deep selections. */
+    /deep/ .markdown-frame img {
+        max-width: 100% !important;
+    }
 </style>
