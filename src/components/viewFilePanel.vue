@@ -30,7 +30,7 @@
 
         <div v-else-if="isType('text/markdown') && !editMode" class="markdown-frame">
             <VueShowdown
-                    :markdown="contents"
+                    :markdown="prepareMarkdownImages(contents)"
                     flavor="github"
                     :options="{ emoji: true }"
             ></VueShowdown>
@@ -178,6 +178,33 @@
             }
 
             /**
+             * Makes sure that we can use simple image names without specifying the full URL.
+             * @param fileContents Contents of a markdown file.
+             * @return the parsed markdown contents.
+             */
+            function prepareMarkdownImages(fileContents) {
+                const settings = appSettings.value;
+                if (!settings.baseURL) {
+                    return fileContents;
+                }
+                let folderPath = '';
+                path.value.forEach(element => {
+                    folderPath += element + '/';
+                });
+                const url = settings.baseURL + '/public/' + folderPath;
+
+                const result = fileContents.replace(/!\[(.*?)\]\((.*?)\)/g, (match) => {
+                    if ((match.indexOf('public/') === -1) && (match.indexOf('://') === -1)) {
+                        const index = match.indexOf('(');
+                        return match.substring(0,index + 1) + url + match.substring(index + 1);
+                    } else {
+                        return match;
+                    }
+                });
+                return result;
+            }
+
+            /**
              * Opens this file in a new browser tab.
              */
             function openWebURL() {
@@ -261,7 +288,8 @@
                 editorInit,
                 webURL,
                 appSettings,
-                openWebURL
+                openWebURL,
+                prepareMarkdownImages
             }
         }
     }
