@@ -8,7 +8,7 @@
             <f7-nav-right>
                 <f7-link href="false" @click="editMode = true" icon-f7="pencil" v-if="!editMode && isType('text')"></f7-link>
                 <f7-link href="false" @click="saveFile" icon-f7="floppy_disk" v-if="editMode && isType('text')"></f7-link>
-                <f7-link href="false" @click="openWebURL" icon-f7="globe" v-if="isType('text/html') && !editMode && appSettings.hostRootFolder"></f7-link>
+                <f7-link href="false" popover-open=".hyperlink-menu" icon-f7="globe" v-if="isType('text/html') && !editMode && appSettings.hostRootFolder"></f7-link>
                 <f7-link href="false" @click="downloadFile" icon-f7="arrow_down_line" v-if="!editMode"></f7-link>
             </f7-nav-right>
         </f7-navbar>
@@ -51,6 +51,17 @@
         <!-- In all other cases we do not support a preview -->
         <span v-else style="padding:20px; display: inline-block;">No preview available for this file type.</span>
 
+        <!-- Web URL popover -->
+        <f7-popover class="hyperlink-menu">
+            <div class="hyperlink-menu-div">
+                <!--<div class="web-url-field">{{webURL}}</div>-->
+                <input type="text" readonly :value="webURL" class="web-url-field" id="web-url-field">
+                <div class="web-url-actions">
+                    <f7-link href="false" @click="copyWebURL" popover-close icon-f7="rectangle_on_rectangle"></f7-link>
+                    <f7-link href="false" @click="openWebURL" popover-close icon-f7="square_arrow_up" style="margin-left:10px;"></f7-link>
+                </div>
+            </div>
+        </f7-popover>
     </f7-page>
 </template>
 <script>
@@ -213,6 +224,17 @@
             }
 
             /**
+             * Copies the web URL to the clipboard.
+             */
+            function copyWebURL() {
+                // Source: W3Schools.
+                var copyText = document.getElementById("web-url-field");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); /* For mobile devices */
+                document.execCommand("copy");
+            }
+
+            /**
              * Gets the editor mode.
              */
             function getEditorMode() {
@@ -289,6 +311,7 @@
                 webURL,
                 appSettings,
                 openWebURL,
+                copyWebURL,
                 prepareMarkdownImages
             }
         }
@@ -330,8 +353,23 @@
         font-family: Verdana;
         font-size: 18px;
     }
-    /* /deep/ is needed because scoped doesn't allow deep selections. */
-    /deep/ .markdown-frame img {
+    /* deep is needed because scoped doesn't allow deep selections. */
+    .markdown-frame :deep(img) {
         max-width: 100% !important;
+    }
+    .hyperlink-menu-div {
+        padding:10px;
+    }
+    .web-url-field {
+        border: 1px solid #cccccc;
+        padding: 5px;
+        width: 100%;
+        overflow: hidden;
+        direction: rtl;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .web-url-actions {
+        padding: 5px;
     }
 </style>
