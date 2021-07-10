@@ -12,8 +12,17 @@ console.log('Managed folder = ' + config.rootFolder);
  */
 function resolveFileType(file) {
     const extension = file.split('.').pop();
+    // A filename must be at least one character and not start with a dot (hidden files).
+    if ((file.length < 1) || (file.indexOf('.') === 0)){
+        return null;
+    }
     if (Object.prototype.hasOwnProperty.call(config.allowedFileTypes, extension)) {
+        // A valid file type was found.
         return config.allowedFileTypes[extension];
+    } else if (config.allowAllFileTypes) {
+        // For all unknown filetypes we assume octet-stream.
+        // Hidden files will not be allowed (starting with a dot).
+        return 'application/octet-stream';
     }
     return null;
 }

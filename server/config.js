@@ -12,6 +12,7 @@ module.exports.config = {
     // Just for testing purposes, do not use in production (create users.json instead):
     username: process.env.USERNAME ? process.env.USERNAME : null,
     password: process.env.PASSWORD ? process.env.PASSWORD : null,
+    allowAllFileTypes: process.env.ALLOW_ALL_FILE_TYPES === 'true',
     allowedFileTypes : {
         'txt' : 'text/plain',
         'md' : 'text/markdown',
