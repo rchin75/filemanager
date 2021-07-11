@@ -5,7 +5,7 @@
             <f7-nav-right>
                 <f7-link icon-f7="arrow_down_doc" popover-open=".paste-menu" v-if="clipboard !== null"></f7-link>
                 <f7-link icon-f7="wrench" @click="onMore" v-if="editMode"></f7-link>
-                <f7-link icon-f7="plus" popover-open=".action-menu"></f7-link>
+                <f7-link icon-f7="plus" popover-open=".action-menu" v-if="!editMode"></f7-link>
                 <f7-link icon-f7="ellipsis_vertical" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
             <f7-subnavbar>
@@ -122,10 +122,9 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
-    import {notify} from "../notifications";
 
     const {logout, initializeLogin} = useAuthentication();
-    const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
+    const {files, path, clipboard, listFiles, deleteFile, deleteFiles, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -285,12 +284,26 @@
     }
 
     /**
-     * Delete multiple selected files.
+     * Delete multiple selected files when in edit mode.
      */
     function onDeleteMultiple() {
-        console.log('onDeleteMultiple: Not implemented yet.');
-        notify('Not implemented', 'Deleting multiple items is not yet implemented.');
-        editMode.value = false;
+        const filenames = [];
+        files.value.forEach(file => {
+            if (file._selected === true) {
+                filenames.push(file.name);
+            }
+        });
+
+        if (filenames.length > 0) {
+            f7.dialog.confirm('Permanently delete selected items?', 'Delete', ()=>{
+                deleteFiles(filenames).then( () => {
+                    editMode.value = false;
+                }).catch( () => {
+                    editMode.value = false;
+                });
+                clearClipboard();
+            });
+        }  
     }
 
     /**

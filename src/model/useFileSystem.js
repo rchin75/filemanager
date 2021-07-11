@@ -206,6 +206,41 @@ export default function useFileSystem() {
     }
 
     /**
+     * Deletes multiple files.
+     * @param {Array} filenames Filenames to delete.
+     * @return {Promise<any>}
+     */
+    async function deleteFiles(filenames) {
+        if (!filenames || (filenames.length === 0)) {
+            notify('Error', 'No files selected to delete.');
+            return;
+        }
+
+        f7.preloader.show();
+        const url = 'api/deleteFiles';
+        const thePath = '/' + state.path.join('/');
+        const params = {
+            path : thePath
+        }
+        const data = {
+            filenames
+        }
+        try {
+            const result = await axios.delete(url,{params, data});
+            await listFiles(thePath);
+            f7.preloader.hide();
+            if (result.data) {
+                return result.data;
+            }
+        } catch (ex) {
+            await listFiles(thePath);
+            f7.preloader.hide();
+            notify('Error', 'Could not delete files.');
+            throw (ex);
+        }
+    }
+
+    /**
      * Uploads a file.
      * @param file The file to upload.
      * @return {Promise<void>}
@@ -340,6 +375,7 @@ export default function useFileSystem() {
         renameFile,
         addToClipboard,
         clearClipboard,
-        paste
+        paste,
+        deleteFiles
     }
 }

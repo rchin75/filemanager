@@ -246,6 +246,34 @@ module.exports.deleteFile = function(req, res) {
 }
 
 /**
+ * Deletes multiple files or folders.
+ * @param req Request.
+ * @param res Response.
+ */
+module.exports.deleteFiles = function(req, res) {
+    const folderPath = req.selectedPath;
+    const filenames = req.body.filenames;
+    try {
+        filenames.forEach(filename => {
+            if (validateFilename(filename)) {
+                const filePath = path.join(folderPath, filename);
+                const stat = fs.statSync(filePath);
+                if (stat.isFile()) {
+                    // Note: nodejs 12 does not have fs.rmSync.
+                    fs.unlinkSync(filePath);
+                } else if (stat.isDirectory()) {
+                    fs.rmdirSync(filePath, { recursive: true });
+                }  
+            }
+        });
+        res.json({deleted: 'Selected files'});
+    } catch (ex) {
+        console.log('Failed to delete files or folders', ex);
+        res.status('400').json({error: 'Failed to delete files or folders'});
+    }
+}
+
+/**
  * Uploads a file.
  * @param req Request.
  * @param res Response.
