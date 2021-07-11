@@ -266,12 +266,12 @@ export default function useFileSystem() {
 
     /**
      * Adds a file to the clipboard.
-     * @param filePath File path.
-     * @param action Either "CUT" or "COPY"
+     * @param {Array} filePaths File path. Note: this is now an array of strings, no longer a string (refactoring).
+     * @param {string} action Either "CUT" or "COPY"
      */
-    function addToClipboard(filePath, action) {
+    function addToClipboard(filePaths, action) {
         state.clipboard = {
-            filePath,
+            filePaths,
             action
         }
     }
@@ -292,11 +292,17 @@ export default function useFileSystem() {
             notify('Paste', 'No file to paste');
             return;
         }
+        if (state.clipboard.filePaths.length > 1) {
+            // TODO: implement pasting multiple items.
+            notify('Not yet implemented', 'Pasting multiple items is not yet implemented.');
+            state.clipboard = null;
+            return;
+        }
         f7.preloader.show();
         const url = 'api/paste';
         const thePath = '/' + state.path.join('/');
         const params = {
-            path : state.clipboard.filePath
+            path : state.clipboard.filePaths[0]
         }
         const data = {
             targetFolder: thePath,

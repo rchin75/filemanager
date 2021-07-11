@@ -4,6 +4,7 @@
         <f7-navbar title="File Manager">
             <f7-nav-right>
                 <f7-link icon-f7="arrow_down_doc" popover-open=".paste-menu" v-if="clipboard !== null"></f7-link>
+                <f7-link icon-f7="wrench" @click="onMore" v-if="editMode"></f7-link>
                 <f7-link icon-f7="plus" popover-open=".action-menu"></f7-link>
                 <f7-link icon-f7="ellipsis_vertical" popover-open=".popover-menu"></f7-link>
             </f7-nav-right>
@@ -30,6 +31,7 @@
         <!-- The NavBar menu -->
         <f7-popover class="popover-menu">
             <f7-list>
+                <f7-list-item link="#" @click="onEdit" popover-close :title="editMode ? 'Leave edit mode': 'Edit'"></f7-list-item>
                 <f7-list-item link="/about/" popover-close title="About"></f7-list-item>
                 <f7-list-item link="#" @click="onLogout" popover-close title="Logout"></f7-list-item>
             </f7-list>
@@ -41,11 +43,13 @@
                     v-for="file in files" :key="file.name"
                     v-bind:title="file.name"
                     v-bind:footer="$filters.formatDate(file.updated) + ' , ' + $filters.formatSize(file.size)"
-                    swipeout
+                    :swipeout="!editMode"
                     @swipeout:deleted="onDelete(file)"
                     @swipeout:open="swipingOut = true"
                     @swipeout:closed="swipingOut = false"
-                    @click="onOpen(file)"
+                    @click="!editMode ? onOpen(file): file._selected = !file._selected"
+                    :checkbox="editMode"
+                    :checked="file._selected"
                     link="#">
                 <template #media>
                     <f7-icon v-bind:f7="formatFileType(file.type)"></f7-icon>
@@ -62,9 +66,10 @@
         <f7-actions :opened="fileActionsOpened" @actions:closed="fileActionsOpened = false">
             <f7-actions-group>
                 <f7-actions-label>File actions:</f7-actions-label>
-                <f7-actions-button @click="onRename">Rename</f7-actions-button>
+                <f7-actions-button @click="onRename" v-if="!editMode">Rename</f7-actions-button>
                 <f7-actions-button @click="onCopy">Copy</f7-actions-button>
                 <f7-actions-button @click="onCut">Cut</f7-actions-button>
+                <f7-actions-button @click="onDeleteMultiple" v-if="editMode">Delete</f7-actions-button>
                 <!--<f7-actions-button>Move</f7-actions-button>-->
                 <f7-actions-button color="red">Cancel</f7-actions-button>
             </f7-actions-group>
@@ -117,6 +122,7 @@
     import NewFilePanel from "../components/newFilePanel";
     import NewFolderPanel from "../components/newFolderPanel";
     import UploadFilePanel from "../components/uploadFilePanel";
+    import {notify} from "../notifications";
 
     const {logout, initializeLogin} = useAuthentication();
     const {files, path, clipboard, listFiles, deleteFile, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
@@ -137,6 +143,9 @@
 
     /** Keeps track of the selected file, */
     const selectedFile = ref(null);
+
+    /** True if in edit mode. */
+    const editMode = ref(false);
 
     /**
      * Determines the icon for the file.
@@ -224,7 +233,13 @@
      * @param file The selected file.
      */
     function onMore(file) {
-        selectedFile.value = file;
+        if (!editMode.value) {
+            selectedFile.value = file;  
+        } else {
+            if (!files.value.find(file => file._selected === true)) {
+                return;
+            }
+        }
         fileActionsOpened.value = true;
     }
 
@@ -270,14 +285,32 @@
     }
 
     /**
+     * Delete multiple selected files.
+     */
+    function onDeleteMultiple() {
+        console.log('onDeleteMultiple: Not implemented yet.');
+        notify('Not implemented', 'Deleting multiple items is not yet implemented.');
+        editMode.value = false;
+    }
+
+    /**
      * Copies the selected file to the clipboard.
      */
     function onCopy() {
-        if (!selectedFile.value) {
-            return;
+        if (selectedFile.value && !editMode.value) {
+            const filePath = path.value.join('/') + '/' + selectedFile.value.name;
+            addToClipboard([filePath], 'COPY');
+        } else if (editMode.value) {
+            const selectedPaths = [];
+            const folderPath = path.value.join('/') + '/';
+            files.value.forEach(file => {
+                if (file._selected) {
+                    selectedPaths.push(folderPath + file.name);
+                }
+            });
+            addToClipboard(selectedPaths, 'COPY');
+            editMode.value = false;
         }
-        const filePath = path.value.join('/') + '/' + selectedFile.value.name;
-        addToClipboard(filePath, 'COPY');
         swipingOut.value = false;
     }
 
@@ -285,11 +318,20 @@
      * Cuts the selected file to the clipboard.
      */
     function onCut() {
-        if (!selectedFile.value) {
-            return;
+        if (selectedFile.value && !editMode.value) {
+            const filePath = path.value.join('/') + '/' + selectedFile.value.name;
+            addToClipboard([filePath], 'CUT');
+        } else if (editMode.value) {
+            const selectedPaths = [];
+            const folderPath = path.value.join('/') + '/';
+            files.value.forEach(file => {
+                if (file._selected) {
+                    selectedPaths.push(folderPath + file.name);
+                }
+            });
+            addToClipboard(selectedPaths, 'CUT');
+            editMode.value = false;
         }
-        const filePath = path.value.join('/') + '/' + selectedFile.value.name;
-        addToClipboard(filePath, 'CUT');
         swipingOut.value = false;
     }
 
@@ -307,9 +349,21 @@
         clearClipboard();
     }
 
+    /**
+     * On edit.
+     */
+    function onEdit() {
+        editMode.value = !editMode.value;
+        clearClipboard();
+        files.value.forEach(file => {
+            file._selected = false;
+        });
+    }
+
     // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.
     watch(() => path.value, () => {
         selectedFile.value = null;
+        editMode.value = false;
     });
 
     export default {
@@ -363,7 +417,10 @@
                 uploadFileOpened,
                 newFileOpened,
                 newFolderOpened,
-                fileActionsOpened
+                fileActionsOpened,
+                editMode,
+                onEdit,
+                onDeleteMultiple
             };
         }
     }
