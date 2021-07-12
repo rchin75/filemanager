@@ -222,30 +222,6 @@ module.exports.createFolder = function(req, res) {
 }
 
 /**
- * Deletes a file or folder.
- * @param req Request.
- * @param res Response.
- */
-module.exports.deleteFile = function(req, res) {
-    const filePath = req.selectedPath;
-    const stat = fs.statSync(filePath);
-
-    try {
-        if (stat.isFile()) {
-            // Note: nodejs 12 does not have fs.rmSync.
-            fs.unlinkSync(filePath);
-            res.json({deleted: filePath});
-        } else if (stat.isDirectory()) {
-            fs.rmdirSync(filePath, { recursive: true });
-            res.json({deleted: filePath});
-        }
-    } catch (ex) {
-        console.log('Failed to delete file or folder', ex);
-        res.status('400').json({error: 'Failed to delete file or folder'});
-    }
-}
-
-/**
  * Deletes multiple files or folders.
  * @param req Request.
  * @param res Response.

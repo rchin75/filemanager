@@ -124,7 +124,7 @@
     import UploadFilePanel from "../components/uploadFilePanel";
 
     const {logout, initializeLogin} = useAuthentication();
-    const {files, path, clipboard, listFiles, deleteFile, deleteFiles, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
+    const {files, path, clipboard, listFiles, deleteFiles, renameFile, addToClipboard, clearClipboard, paste, getAppSettings} = useFileSystem();
 
     /** True to open the file details popup. */
     const popupOpened = ref(false);
@@ -272,14 +272,11 @@
      * @param file The selected file.
      */
     function onDelete(file) {
-        console.log('Delete file', file);
-        const filePath = path.value.join('/') + '/' + file.name;
-        deleteFile(filePath).then( () => {
-            swipingOut.value = false;
-        }).catch(()=>{
-            swipingOut.value = false;
+        deleteFiles([file.name]).then( () => {
+            editMode.value = false;
+        }).catch( () => {
+            editMode.value = false;
         });
-        // For now we clear the clipboard. (Only needed when it has the selected file, so needs improvement later.)
         clearClipboard();
     }
 

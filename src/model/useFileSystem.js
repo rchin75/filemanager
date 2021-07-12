@@ -179,33 +179,6 @@ export default function useFileSystem() {
     }
 
     /**
-     * Deletes a file.
-     * @param filePath File path.
-     * @return {Promise<any>}
-     */
-    async function deleteFile(filePath) {
-        f7.preloader.show();
-        const url = 'api/delete';
-        const params = {
-            path : filePath ? filePath : ''
-        }
-        const thePath = '/' + state.path.join('/');
-        try {
-            const result = await axios.delete(url,{params});
-            await listFiles(thePath);
-            f7.preloader.hide();
-            if (result.data) {
-                return result.data;
-            }
-        } catch (ex) {
-            await listFiles(thePath);
-            f7.preloader.hide();
-            notify('Error', 'Could not delete file.');
-            throw (ex);
-        }
-    }
-
-    /**
      * Deletes multiple files.
      * @param {Array} filenames Filenames to delete.
      * @return {Promise<any>}
@@ -217,7 +190,7 @@ export default function useFileSystem() {
         }
 
         f7.preloader.show();
-        const url = 'api/deleteFiles';
+        const url = 'api/delete';
         const thePath = '/' + state.path.join('/');
         const params = {
             path : thePath
@@ -235,7 +208,11 @@ export default function useFileSystem() {
         } catch (ex) {
             await listFiles(thePath);
             f7.preloader.hide();
-            notify('Error', 'Could not delete files.');
+            if (filenames.length > 1) {
+                notify('Error', 'Could not delete files.');
+            } else {
+                notify('Error', 'Could not delete file.');
+            }
             throw (ex);
         }
     }
@@ -372,12 +349,11 @@ export default function useFileSystem() {
         saveTextFile,
         createTextFile,
         createFolder,
-        deleteFile,
+        deleteFiles,
         uploadFile,
         renameFile,
         addToClipboard,
         clearClipboard,
-        paste,
-        deleteFiles
+        paste
     }
 }
