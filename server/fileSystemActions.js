@@ -343,57 +343,62 @@ module.exports.renameFile = function(req, res) {
  * @param res Response.
  */
 module.exports.pasteFile = function(req, res) {
-    const filePath = req.selectedPath;
-    const targetFolder = req.body.targetFolder;
+    const targetFolder = req.selectedPath;
+    let sourceFolder = req.body.sourceFolder;
     const action = req.body.action;
-    const stat = fs.statSync(filePath);
-    const sourceFilename = filePath.split('/').pop();
+    const filenames = req.body.filenames;
 
-    // Validate the target folder.
+    if (!filenames || filenames.length === 0) {
+        return res.status('400').json({error: 'No files to paste'});
+    }
+
+    // Validate the source folder.
     // This contains duplicate code from pathValidator. Needs optimization later.
     const invalidCharacters = /[`!@#$%^&*()+={};':"\\|,<>?~]/;
-    if ((!targetFolder) || (targetFolder.indexOf('..') !== -1) || (targetFolder.indexOf('./') !== -1) || (targetFolder.indexOf('\\') !== -1)) {
-        res.status('404').json({error: 'Invalid target folder'});
-    } else if (invalidCharacters.test(targetFolder)) {
-        res.status('404').json({error: 'Invalid target folder'});
+    if ((!sourceFolder) || (sourceFolder.indexOf('..') !== -1) || (sourceFolder.indexOf('./') !== -1) || (sourceFolder.indexOf('\\') !== -1)) {
+        return res.status('404').json({error: 'Invalid source folder'});
+    } else if (invalidCharacters.test(sourceFolder)) {
+        return res.status('404').json({error: 'Invalid source folder'});
+    }
+    sourceFolder = path.join(config.rootFolder , sourceFolder);
+    if (!fs.existsSync(sourceFolder)) {
+        return res.status('404').json({error: 'Invalid source folder'});
     }
 
-    // Determine the full target folder.
-    const fullTargetFolder = getFullPath(targetFolder);
-    if (!fs.existsSync(fullTargetFolder)) {
-        return res.status(400).json({error: 'Non existing target folder.'});
-    }
+    const errors = [];
+    filenames.forEach(filename => {
+        if (validateFilename(filename)) {
+            const sourcePath = path.join(sourceFolder, filename);
+            const stat = fs.statSync(sourcePath);
+            const targetPath = path.join(targetFolder, filename);
 
-    // Determine where to move/copy to:
-    let target = fullTargetFolder;
-    if (!target.endsWith('/')) {
-        target += '/';
-    }
-    target += sourceFilename;
+            if (fs.existsSync(targetPath)) {
+                errors.push(filename);
+            }
 
-    // We do not overwrite an existing file.
-    if (fs.existsSync(target)) {
-        return res.status(400).json({error: 'File already exists in the target folder.'});
-    }
-
-    if (stat.isFile()) {
-        if (action === 'CUT') {
-            fs.copyFileSync(filePath, target);
-            fs.unlinkSync(filePath);
-        } else {
-            fs.copyFileSync(filePath, target);
+            if (stat.isFile()) {
+                if (action === 'CUT') {
+                    fs.copyFileSync(sourcePath, targetPath);
+                    fs.unlinkSync(sourcePath);
+                } else {
+                    fs.copyFileSync(sourcePath, targetPath);
+                }
+            } else if (stat.isDirectory()) {
+                // See below for the implementation of copyFolderSync.
+                copyFolderSync(sourcePath, targetPath);
+                if (action === 'CUT') {
+                    // Delete the original folder.
+                    fs.rmdirSync(sourcePath, { recursive: true });
+                }
+            } else {
+                console.log('Invalid file type. Cannot paste: ' + sourcePath);
+            }
         }
-    } else if (stat.isDirectory()) {
-        // See below for the implementation of copyFolderSync.
-        copyFolderSync(filePath, target);
-        if (action === 'CUT') {
-            // Delete the original folder.
-            fs.rmdirSync(filePath, { recursive: true });
-        }
-    } else {
-        return res.status(400).json({error: 'Invalid file type.'});
-    }
+    });
 
+    if (errors.length > 0) {
+        return res.status('400').json({error: 'Could not paste: ' + errors.join(',')});
+    }
     res.json({result: 'File pasted!'});
 }
 

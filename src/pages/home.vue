@@ -310,39 +310,32 @@
      * Copies the selected file to the clipboard.
      */
     function onCopy() {
-        if (selectedFile.value && !editMode.value) {
-            const filePath = path.value.join('/') + '/' + selectedFile.value.name;
-            addToClipboard([filePath], 'COPY');
-        } else if (editMode.value) {
-            const selectedPaths = [];
-            const folderPath = path.value.join('/') + '/';
-            files.value.forEach(file => {
-                if (file._selected) {
-                    selectedPaths.push(folderPath + file.name);
-                }
-            });
-            addToClipboard(selectedPaths, 'COPY');
-            editMode.value = false;
-        }
-        swipingOut.value = false;
+        toClipBoard('COPY');
     }
 
     /**
      * Cuts the selected file to the clipboard.
      */
     function onCut() {
+        toClipBoard('CUT');
+    }
+
+    /**
+     * Performs copy or cut.
+     * @param {string} action COPY or CUT.
+     */
+    function toClipBoard(action) {
+        const folderPath = '/' + path.value.join('/')
         if (selectedFile.value && !editMode.value) {
-            const filePath = path.value.join('/') + '/' + selectedFile.value.name;
-            addToClipboard([filePath], 'CUT');
+            addToClipboard(folderPath , [selectedFile.value.name], action);
         } else if (editMode.value) {
-            const selectedPaths = [];
-            const folderPath = path.value.join('/') + '/';
+            const selectedFiles = [];
             files.value.forEach(file => {
                 if (file._selected) {
-                    selectedPaths.push(folderPath + file.name);
+                    selectedFiles.push(file.name);
                 }
             });
-            addToClipboard(selectedPaths, 'CUT');
+            addToClipboard(folderPath, selectedFiles, action);
             editMode.value = false;
         }
         swipingOut.value = false;

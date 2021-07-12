@@ -301,12 +301,18 @@ export default function useFileSystem() {
 
     /**
      * Adds a file to the clipboard.
-     * @param {Array} filePaths File path. Note: this is now an array of strings, no longer a string (refactoring).
+     * @param {string} sourceFolder The source folder.
+     * @param {Array} filenames Filenames.
      * @param {string} action Either "CUT" or "COPY"
      */
-    function addToClipboard(filePaths, action) {
+    function addToClipboard(sourceFolder, filenames, action) {
+        if (filenames.length === 0) {
+            state.clipboard = null;
+            return;
+        }
         state.clipboard = {
-            filePaths,
+            sourceFolder,
+            filenames,
             action
         }
     }
@@ -327,20 +333,15 @@ export default function useFileSystem() {
             notify('Paste', 'No file to paste');
             return;
         }
-        if (state.clipboard.filePaths.length > 1) {
-            // TODO: implement pasting multiple items.
-            notify('Not yet implemented', 'Pasting multiple items is not yet implemented.');
-            state.clipboard = null;
-            return;
-        }
         f7.preloader.show();
         const url = 'api/paste';
         const thePath = '/' + state.path.join('/');
         const params = {
-            path : state.clipboard.filePaths[0]
+            path : thePath
         }
         const data = {
-            targetFolder: thePath,
+            sourceFolder: state.clipboard.sourceFolder,
+            filenames: state.clipboard.filenames,
             action: state.clipboard.action
         };
         try {
@@ -351,6 +352,7 @@ export default function useFileSystem() {
             return result.data;
         } catch(ex) {
             f7.preloader.hide();
+            await listFiles(thePath);
             const msg = (ex.response.data && ex.response.data.error) ? ex.response.data.error : 'Could not paste file.';
             notify('Pasting file failed', msg);
             // Let's clear the clipboard even if it failed. (May need to be changed later if not convenient.)
