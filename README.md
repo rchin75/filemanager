@@ -60,7 +60,7 @@ A .env file is required to specify customized configuration parameters.
 Example of a .env file's contents:
 ```
 # The port on which the server should run. Default is 3000.
-PORT=80
+PORT=3000
 
 # The folder on the server that should be made shown and managed in the browser (inlc sub-folders).
 # If not specified the current folder will be used. 
@@ -69,6 +69,14 @@ MANAGED_FOLDER=./folder_with_the_files_to_manage
 
 # If true then the managed folder will also be hosted as static content.
 HOST_MANAGED_FOLDER=true
+
+# Additional settings for then hosting the managed folder:
+
+# True if the content in the hosted managed folder should be password protected.
+REQUIRE_LOGIN=true
+
+# The base URL is used to link to static content in the hosted managed folder.
+BASE_URL=http://localhost:3000
 ```
 
 ### About adding and managing user accounts ###
