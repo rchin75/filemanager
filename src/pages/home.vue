@@ -71,7 +71,7 @@
                 <f7-actions-button @click="onCut">Cut</f7-actions-button>
                 <f7-actions-button @click="onDeleteMultiple" v-if="editMode">Delete</f7-actions-button>
                 <!--<f7-actions-button>Move</f7-actions-button>-->
-                <f7-actions-button color="red">Cancel</f7-actions-button>
+                <f7-actions-button color="red" @click="onCancel">Cancel</f7-actions-button>
             </f7-actions-group>
         </f7-actions>
 
@@ -363,6 +363,18 @@
         });
     }
 
+    /**
+     * On cancel (in the action menu)
+     */
+    function onCancel() {
+        editMode.value = false;
+        clearClipboard();
+        swipingOut.value = false;
+        files.value.forEach(file => {
+            file._selected = false;
+        });
+    }
+
     // When the path changes we must reset the selectedFile otherwise errors will result because file and path don't match.
     watch(() => path.value, () => {
         selectedFile.value = null;
@@ -423,7 +435,8 @@
                 fileActionsOpened,
                 editMode,
                 onEdit,
-                onDeleteMultiple
+                onDeleteMultiple,
+                onCancel
             };
         }
     }
