@@ -9,7 +9,7 @@ const appPath = path.join(__dirname, '../index');
 const properties = [
     {
         name: 'username',
-        validator: /^[a-zA-Z\s\-]+$/,
+        validator: /^[a-zA-Z\s-]+$/,
         warning: 'Username must be only letters, spaces, or dashes'
     },
     {
