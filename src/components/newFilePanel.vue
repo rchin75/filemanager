@@ -36,6 +36,9 @@
             const fileName = ref(null);
             const valid = ref(false);
 
+            /**
+             * Creates the new file.
+             */
             function createFile() {
                 if (valid.value) {
                     console.log('Creating file ' + fileName.value);

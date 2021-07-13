@@ -129,6 +129,7 @@
 
             /**
              * Gets the web address.
+             * @return {string} The web address.
              */
             function getWebURL() {
                 const settings = appSettings.value;
@@ -142,7 +143,7 @@
 
             /**
              * Determines if the file is of type.
-             * @param type The type.
+             * @param {string} type The type.
              * @return {boolean}
              */
             function isType(type) {
@@ -190,8 +191,8 @@
 
             /**
              * Makes sure that we can use simple image names without specifying the full URL.
-             * @param fileContents Contents of a markdown file.
-             * @return the parsed markdown contents.
+             * @param {string} fileContents Contents of a markdown file.
+             * @return {string} the parsed markdown contents.
              */
             function prepareMarkdownImages(fileContents) {
                 const settings = appSettings.value;

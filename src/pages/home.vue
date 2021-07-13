@@ -148,7 +148,7 @@
 
     /**
      * Determines the icon for the file.
-     * @return The icon to use.
+     * @return {string} The icon to use.
      */
     function formatFileType(type) {
         let icon;

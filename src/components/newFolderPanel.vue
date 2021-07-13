@@ -36,6 +36,9 @@
             const folderName = ref(null);
             const valid = ref(false);
 
+            /**
+             * Creates the new folder.
+             */
             function createNewFolder() {
                 if (valid.value) {
                     console.log('Creating folder ' + folderName.value);

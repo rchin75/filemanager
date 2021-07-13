@@ -45,7 +45,7 @@ export default function useFileSystem() {
 
     /**
      * Lists the available files and folders.
-     * @param [path] The path in this format: 'folder1/folder2'. If not provided we will load the root folder.
+     * @param {string} [path] The path in this format: 'folder1/folder2'. If not provided we will load the root folder.
      * @returns {Promise<void>}
      */
     async function listFiles(path) {
@@ -72,7 +72,7 @@ export default function useFileSystem() {
 
     /**
      * Gets the contents of a text file.
-     * @param filePath file path.
+     * @param {string} filePath file path.
      * @return {Promise<null|any>}
      */
     async function getTextFileContents(filePath) {
@@ -97,8 +97,8 @@ export default function useFileSystem() {
 
     /**
      * Saves a text file.
-     * @param filePath The file path.
-     * @param contents The contents to save.
+     * @param {string} filePath The file path.
+     * @param {string} contents The contents to save.
      * @return {Promise<any>}
      */
     async function saveTextFile(filePath, contents) {
@@ -123,7 +123,7 @@ export default function useFileSystem() {
 
     /**
      * Creates a new text file.
-     * @param filename Filename.
+     * @param {string} filename Filename.
      * @return {Promise<any>}
      */
     async function createTextFile(filename) {
@@ -152,7 +152,7 @@ export default function useFileSystem() {
 
     /**
      * Creates a new folder.
-     * @param folderName Folder name.
+     * @param {string} folderName Folder name.
      * @return {Promise<any>}
      */
     async function createFolder(folderName) {
@@ -180,7 +180,7 @@ export default function useFileSystem() {
 
     /**
      * Deletes multiple files.
-     * @param {Array} filenames Filenames to delete.
+     * @param {string[]} filenames Filenames to delete.
      * @return {Promise<any>}
      */
     async function deleteFiles(filenames) {
@@ -249,8 +249,8 @@ export default function useFileSystem() {
 
     /**
      * Renames a file or folder.
-     * @param filePath Full file path.
-     * @param newName New name.
+     * @param {string} filePath Full file path.
+     * @param {string} newName New name.
      * @return {Promise<any>}
      */
     async function renameFile(filePath, newName) {

@@ -24,6 +24,9 @@
         name: 'upload-file-panel',
         props: [],
         setup() {
+            /**
+             * Uploads the file.
+             */
             function upload() {
                 const file = document.querySelector('#upload_file');
                 uploadFile(file);

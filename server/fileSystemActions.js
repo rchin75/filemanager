@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const {config} = require('./config');
-const {getFullPath} = require('./pathValidator');
 
 console.log('Managed folder = ' + config.rootFolder);
 
@@ -380,8 +379,8 @@ module.exports.pasteFile = function(req, res) {
 
 /**
  * Copies a folder recursively.
- * @param from Source folder.
- * @param to Target folder.
+ * @param {string} from Source folder.
+ * @param {string} to Target folder.
  */
 function copyFolderSync(from, to) {
     // Source: https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js

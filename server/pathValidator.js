@@ -24,6 +24,7 @@ module.exports.validatePathExists = function(req, res, next) {
 /**
  * Gets the full path.
  * @param subPath Sub path.
+ * @return {string} The full path.
  */
 module.exports.getFullPath = function(subPath){
     return getFullPath(subPath);
@@ -61,7 +62,7 @@ function validate(req, res, next, mustExist) {
 /**
  * Gets the full path.
  * @param {string} subPath A sub path.
- * @return {null} Full path or null.
+ * @return {null|string} Full path or null.
  */
 function getFullPath(subPath) {
     let fullPath = null;
