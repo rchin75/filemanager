@@ -69,42 +69,39 @@ function validateFilename(filename) {
  */
 module.exports.listDirectory = function(req, res) {
     const currentDir = req.selectedPath;
+    const filesList = [];
+    const files = fs.readdirSync(currentDir);
+    if (!files) {
+        return res.status(404).send({error : 'No files found'});
+    }
+    files.forEach(file => {
+        const filePath = path.join(currentDir, file);
+        const stat = fs.statSync(filePath);
 
-    fs.readdir(currentDir,(err, files) => {
-        const filesList = [];
-        if (!files) {
-            res.status(404).send({error : 'No files found'});
-            return;
-        }
-        files.forEach(file => {
-            const filePath = path.join(currentDir, file);
-            const stat = fs.statSync(filePath);
+        const fileInfo = {
+            name:file,
+            size:stat.size,
+            created: stat.birthtime, // Creation time.
+            updated: stat.mtime, // Updated time: the file was modified.
+            accessed: stat.atime, // Accessed time: when it was last accessed.
+            changed: stat.ctime, // Changed time: file properties changed.
+            owner: stat.uid // User ID
+        };
 
-            const fileInfo = {
-                name:file,
-                size:stat.size,
-                created: stat.birthtime, // Creation time.
-                updated: stat.mtime, // Updated time: the file was modified.
-                accessed: stat.atime, // Accessed time: when it was last accessed.
-                changed: stat.ctime, // Changed time: file properties changed.
-                owner: stat.uid // User ID
-            };
-
-            if (stat.isFile()) {
-                fileInfo.type = resolveFileType(file);
-                if (fileInfo.type) {
-                    filesList.push(fileInfo);
-                }
-            } else if (stat.isDirectory()) {
-                fileInfo.type = 'folder';
+        if (stat.isFile()) {
+            fileInfo.type = resolveFileType(file);
+            if (fileInfo.type) {
                 filesList.push(fileInfo);
-            } // Ignore files that are no directory or file (symlinks, sockets etc)
+            }
+        } else if (stat.isDirectory()) {
+            fileInfo.type = 'folder';
+            filesList.push(fileInfo);
+        } // Ignore files that are no directory or file (symlinks, sockets etc)
 
-        });
-        res.send({
-            path: resolvePath(currentDir),
-            files: filesList
-        });
+    });
+    res.json({
+        path: resolvePath(currentDir),
+        files: filesList
     });
 }
 
@@ -182,11 +179,9 @@ module.exports.createFile = function(req, res) {
     const filename = req.body.filename;
     const type = resolveFileType(filename);
     if (type === null) {
-        res.status(400).json({error: 'Invalid file type.'});
-        return;
+        return res.status(400).json({error: 'Invalid file type.'});
     } else if (!validateFilename(filename)) {
-        res.status(400).json({error: 'Invalid filename.'});
-        return;
+        return res.status(400).json({error: 'Invalid filename.'});
     }
 
     const file = path.join(filePath, filename);
@@ -208,7 +203,7 @@ module.exports.createFolder = function(req, res) {
     const folderName = req.body.folderName;
 
     if (!validateFilename(folderName)) {
-        res.status(400).json({error: 'Invalid folder name.'});
+        return res.status(400).json({error: 'Invalid folder name.'});
     }
 
     const folder = path.join(filePath, folderName);
