@@ -178,10 +178,10 @@ module.exports.createFile = function(req, res) {
     const filePath = req.selectedPath;
     const filename = req.body.filename;
     const type = resolveFileType(filename);
-    if (type === null) {
-        return res.status(400).json({error: 'Invalid file type.'});
-    } else if (!validateFilename(filename)) {
+    if (!validateFilename(filename)) {
         return res.status(400).json({error: 'Invalid filename.'});
+    } else if (type === null) {
+        return res.status(400).json({error: 'Invalid file type.'});
     }
 
     const file = path.join(filePath, filename);
@@ -238,7 +238,6 @@ module.exports.deleteFiles = function(req, res) {
         });
         res.json({deleted: 'Selected files'});
     } catch (ex) {
-        console.log('Failed to delete files or folders', ex);
         res.status('400').json({error: 'Failed to delete files or folders'});
     }
 }
@@ -293,17 +292,20 @@ module.exports.renameFile = function(req, res) {
     const folderPath = filePath.substring(0, filePath.length - oldName.length);
     const stat = fs.statSync(filePath);
     const isFile = stat.isFile();
+    const newFilePath = path.join(folderPath, newName);
 
     // First validate the new file name.
     if (!validateFilename(newName)) {
         return res.status(400).json({error: 'Invalid new filename.'});
     } else if (oldName === newName) {
         return res.status(400).json({error: 'No new file name provided.'})
+    }  else if (fs.existsSync(newFilePath)) {
+        return res.status(400).json({error: 'Another file with the same name already exists.'})
     } else if (isFile && !resolveFileType(newName)) {
         return res.status(400).json({error: 'Invalid new filename extension.'});
     }
 
-    fs.renameSync(filePath, folderPath + newName);
+    fs.renameSync(filePath, newFilePath);
     res.json({result: newName});
 }
 
@@ -336,6 +338,7 @@ module.exports.pasteFile = function(req, res) {
     }
 
     const errors = [];
+
     filenames.forEach(filename => {
         if (validateFilename(filename)) {
             const sourcePath = path.join(sourceFolder, filename);
@@ -361,6 +364,7 @@ module.exports.pasteFile = function(req, res) {
                     fs.rmdirSync(sourcePath, { recursive: true });
                 }
             } else {
+                // This should never happen, but just in case.
                 console.log('Invalid file type. Cannot paste: ' + sourcePath);
             }
         }
@@ -369,7 +373,7 @@ module.exports.pasteFile = function(req, res) {
     if (errors.length > 0) {
         return res.status('400').json({error: 'Could not paste: ' + errors.join(',')});
     }
-    res.json({result: 'File pasted!'});
+    res.json({result: 'Files pasted!'});
 }
 
 /**
