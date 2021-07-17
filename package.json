@@ -1,6 +1,6 @@
 {
   "name": "filemanager",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "bin": "./server/bin/main.js",
   "scripts": {
