@@ -2,7 +2,18 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 
 const saltRounds = 10;
-const usersFile = './users.json';
+
+// Where to store the users.
+let usersFile = './users.json';
+
+/**
+ * Sets the users file to use.
+ * Normally there is no reason to change this. Used by unit tests.
+ * @param filePath Full file path to the users file.
+ */
+module.exports.setUsersFile = function(filePath) {
+    usersFile = filePath;
+}
 
 /**
  * Adds a user.
