@@ -2,7 +2,23 @@
 
 Playing with Vue JS, Framework7 and Node JS to make an online file manager.
 
-Disclaimers: 
+This file manager runs as a NodeJS web app and is accessible through a web browser.
+
+## Features ##
+- Specify a local root folder to manage (config option)
+- Browse files and folders
+- Upload and download files
+- Create new text files (txt, html, css, js, md, csv)
+- Create sub-folders
+- Rename files and folders
+- Delete selected files and folders
+- Copy-Cut-Paste files and folders
+- Preview text files, images, and webpages (html files).
+- Edit text files with a build-in editor.
+- Host the root folder as static content
+- Password protection and (very) basic user management
+
+## Disclaimers ## 
 - This is not a product, just me playing around.
 - Use at your own risk. This software comes without any warranties whatsoever.
 - Running the filemanager means that its server will access your file system.
