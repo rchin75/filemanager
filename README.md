@@ -36,8 +36,7 @@ node server/bin/main.js -add-user
 Enter a username and password when prompted.
 
 #### Step 2: create a .env file in the project folder. ####
-Sample contents of the .env file.
-For this example to work, make sure that a folder called 'my_files' actually exists in the project folder.
+Sample contents of the .env file:
 ```
 PORT=3000
 MANAGED_FOLDER=./my_files
@@ -45,6 +44,8 @@ HOST_MANAGED_FOLDER=true
 REQUIRE_LOGIN=true
 BASE_URL=http://localhost:3000
 ```
+For this example to work, make sure that a folder called 'my_files' actually exists in the project folder.
+
 #### Step 3: in a terminal enter: ####
 ```
 npm install
@@ -53,7 +54,7 @@ npm run server
 ```
 #### Step 4: open a browser and go to: ####
 ```
-localhost:3000
+http://localhost:3000
 ```
 
 ---
