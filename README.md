@@ -26,11 +26,40 @@ This includes its ability to add, permanently delete, and modify files & folders
 - This software may have bugs and security flaws.
 - This software was only tested on a Mac, no idea if it behaves the same on e.g. Windows or Linux.
 
+## Quick start ##
+First clone this project from GitHub and then follow these steps.
+
+#### Step 1: add a user ####
+```
+node server/bin/main.js -add-user
+```
+Enter a username and password when prompted.
+
+#### Step 2: create a .env file in the project folder. ####
+Sample contents of the .env file.
+For this example to work, make sure that a folder called 'my_files' actually exists in the project folder.
+```
+PORT=3000
+MANAGED_FOLDER=./my_files
+HOST_MANAGED_FOLDER=true
+REQUIRE_LOGIN=true
+BASE_URL=http://localhost:3000
+```
+#### Step 3: in a terminal enter: ####
+```
+npm install
+npm run build
+npm run server
+```
+#### Step 4: open a browser and go to: ####
+```
+localhost:3000
+```
+
 ---
 
-To run make sure you run both the frontend and the server.
-
-## Project setup
+## Project setup in detail
+Install dependencies.
 ```
 npm install
 ```
