@@ -2,15 +2,19 @@
     <div class="breadcrumb">
         <f7-link class="breadcrumb-link" href="false" @click="onOpenRoot()"><f7-icon f7="house"></f7-icon></f7-link>
         <span class="breadcrumb-separator">/</span>
-        <span v-for="(folder,index) in path" :key="folder">
+        <span class="breadcrumb-shortener" v-if="shortened">../</span>
+        <span v-for="(folder,index) in shortPath" :key="folder">
             <f7-link class="breadcrumb-link" href="false" @click="onOpenPath(index)">{{folder}}</f7-link>
             <span class="breadcrumb-separator">/</span>
         </span>
     </div>
 </template>
 <script>
+    import {ref, watch} from "vue";
     import useFileSystem from "../model/useFileSystem";
     const {path, listFiles} = useFileSystem();
+    /** The max. number of path items to show. */
+    const itemsToShow = 2;
 
     /**
      * Opens the root folder.
@@ -25,18 +29,40 @@
      */
     function onOpenPath(index) {
         let folderPath = '';
-        for (let i=0; i<=index; i++) {
+        for (let i=0; i<=index + getStart(); i++) {
             folderPath += '/' + path.value[i]
         }
         listFiles(folderPath);
+    }
+
+    /**
+     * Gets the start index for the path to show.
+     */
+    function getStart() {
+        return path.value.length <= itemsToShow ? 0 : path.value.length - itemsToShow;
     }
 
     export default {
         name: 'breadcrumb',
         props: {},
         setup() {
+
+            // Determine the shortened path to make sure it fits in the screen.
+            const shortPath = ref([]);
+            const shortened = ref(false);
+            watch(() => path.value, () => {
+                const items = path.value;
+                shortPath.value.length = 0;
+                const start = getStart();
+                shortened.value = start > 0 ? true : false;
+                for (let i=start; i < items.length; i++) {
+                    shortPath.value.push(items[i]);
+                }
+            });
+
             return {
-                path,
+                shortPath,
+                shortened,
                 onOpenRoot,
                 onOpenPath
             }
@@ -46,8 +72,10 @@
 <style scoped>
     .breadcrumb {
         font-size: 16px;
+        height: 100%;
     }
-    .breadcrumb .breadcrumb-separator {
+    .breadcrumb .breadcrumb-separator,
+    .breadcrumb .breadcrumb-shortener {
         float: left;
         box-sizing: border-box;
         align-content: center;
