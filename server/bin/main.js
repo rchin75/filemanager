@@ -5,6 +5,8 @@ const {addUser} = require('../users/userManagement');
 const args = process.argv.slice(2);
 const appPath = path.join(__dirname, '../index');
 
+console.log("args: " , args);
+
 // Configure Prompt.
 const properties = [
     {
@@ -29,13 +31,19 @@ if (args.length === 0) {
     switch (args[0]) {
         case '-add-user': {
             // node server/bin/main.js -add-user
-            prompt.start();
-            prompt.get(properties, function (err, result) {
-                if (err) { return onErr(err); }
-                addUser(result.username, result.password).then(()=> {
+            if ((args.length === 3) && (args[1].length > 1) && (args[2].length > 1)) {
+                addUser(args[1], args[2]).then(()=> {
                     console.log('User added to users.json.')
                 });
-            });
+            } else {
+                prompt.start();
+                prompt.get(properties, function (err, result) {
+                    if (err) { return onErr(err); }
+                    addUser(result.username, result.password).then(()=> {
+                        console.log('User added to users.json.')
+                    });
+                });
+            }
             break;
         }
         default:

@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+src
+test
+dist-server
+.env
+testFolder
+public
+users.json
+.git
+.gitignore
+.idea
+.DS_Store
+babel.config.js
+vue.config.js
