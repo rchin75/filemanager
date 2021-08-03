@@ -5,8 +5,6 @@ const {addUser} = require('../users/userManagement');
 const args = process.argv.slice(2);
 const appPath = path.join(__dirname, '../index');
 
-console.log("args: " , args);
-
 // Configure Prompt.
 const properties = [
     {
