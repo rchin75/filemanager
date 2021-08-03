@@ -12,13 +12,10 @@ ENV BASE_URL=http://localhost:3000
 ENV HOST_MANAGED_FOLDER=true
 
 # Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# Copy both package.json and package-lock.json.
 COPY package*.json ./
 
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
 
 # Bundle app source
 COPY . .
